@@ -3,7 +3,6 @@ const TICKETS: TTicket[] = [
     id: '1',
     eventId: '1',
     description: "1 hour",
-    transferFees: 10,
     price: 18
   }
 ]
