@@ -1,0 +1,61 @@
+#burn-ticket {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--secondary);
+
+  .catch {
+    height: calc(70svh - var(--navbar-height));
+    width: calc(100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg?cs=srgb&dl=pexels-teddy-yang-2263436.jpg&fm=jpg");
+    background-size: cover;
+    background-position: center;
+
+    .titles {
+      backdrop-filter: blur(7px);
+      padding: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      width: 100%;
+  
+      h1 {
+        position: relative;
+        top: -100vh;
+        animation-name: go-in-top;
+        animation-duration: 1s;
+        // animation-delay: 1.5s;
+        animation-fill-mode: forwards;
+        text-shadow: -1px 1px 6px rgba(0,0,0,0.6);
+      }
+    }
+  }
+  .use-ticket {
+    width: calc(100% - 50px);
+    padding: 50px 25px;
+    padding-bottom: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .data-type {
+      font-size: 12px;
+      padding-right: 15px;
+    }
+
+    .btn {
+      margin-top: 50px;
+    }
+  }
+
+  .create-event {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+  }
+}

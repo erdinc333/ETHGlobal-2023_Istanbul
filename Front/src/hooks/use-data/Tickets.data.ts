@@ -22,6 +22,10 @@ export class TicketsData {
   }
 
   static async getEventTicketCategories(eventId: string): Promise<TTicketCategory[]> {
-    return [{ label: TICKETS[0].description, supply: 1 }]
+    return [{ label: TICKETS[0].description, supply: 1, transferFees: 10 }]
+  }
+
+  static async getEventTicketCategory(categoryId: string): Promise<TTicketCategory> {
+    return { label: TICKETS[0].description, supply: 1, transferFees: 10 }
   }
 }

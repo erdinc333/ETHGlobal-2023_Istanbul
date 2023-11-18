@@ -19,6 +19,7 @@ import { buildClient, uploadTest } from './lib/IPFS/ipfs_client'
 import { Client } from '@web3-storage/w3up-client'
 import { useState, useEffect } from 'react'
 import { IpfsClientContext } from './Contexts/ipfsClientContext'
+import { BurnTicket } from './pages/dashboard/ticket/BurnTicket.page'
 
 // 1. Get projectId
 const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID
@@ -65,6 +66,7 @@ function App() {
               <Route path="/dashboard"        element={ <ManageEvents /> } />
               <Route path="/dashboard/create" element={ <CreateEvent /> } />
               <Route path="/dashboard/:id"    element={ <ManageSpecificEvent /> } />
+              <Route path="/dashboard/ticket" element={ <BurnTicket /> } />
             </Routes>
           </section>
         </BrowserRouter>
