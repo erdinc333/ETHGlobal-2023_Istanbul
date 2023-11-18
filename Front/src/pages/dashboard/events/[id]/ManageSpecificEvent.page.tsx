@@ -7,7 +7,7 @@ import { handleData } from '../../../../hooks/use-data/handleData.hook'
 export function ManageSpecificEvent() {
   const { id: eventId } = useParams() 
   const [event, setEvent] = useState<TEvent | null>(null)
-  const [eventTickets, setEventTickets] = useState<TTicket[]>([])
+  const [ticketCategories, setTicketCategories] = useState<TTicketCategory[]>([])
   const [tmpBegin, setTmpBegin] = useState<string>('')
   const [tmpEnd, setTmpEnd] = useState<string>('')
 
@@ -44,8 +44,8 @@ export function ManageSpecificEvent() {
       setTmpBegin(dateToDatetimeString(wantedEvent?.dateTimeRange.begin))
       setTmpEnd(dateToDatetimeString(wantedEvent?.dateTimeRange.end))
 
-      const tickets = await handleData().tickets.getAllEventTickets(eventId || '')
-      setEventTickets(tickets)
+      const ticketCategories = await handleData().tickets.getEventTicketCategories(eventId || '')
+      setTicketCategories(ticketCategories)
     }
 
     fetchData()
@@ -77,10 +77,20 @@ export function ManageSpecificEvent() {
                 </section>
 
                 <section className="market-place">
-                  <h2>Market Place</h2>
+                  <h2>Tickets supply</h2>
                   <div className="tickets">
-                    { eventTickets.length }
+                    {
+                      ticketCategories.map((category) => (
+                          <div className="category" key={category.label}>
+                            <p className="label">{category.label}</p>
+                            <p className="supply">x{category.supply}</p>
+                          </div>
+                        )
+                      )
+                    }
                   </div>
+
+                  <button className="btn action">Create Tickets</button>
                 </section>
               </>
             : <p className="not-found">Event not found</p>

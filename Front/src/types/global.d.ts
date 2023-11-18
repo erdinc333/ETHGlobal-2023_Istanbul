@@ -21,6 +21,11 @@ declare global {
     picturesURL: string[]
   }
 
+  type TTicketCategory = {
+    label: string,
+    supply: number
+  }
+
   type TTicket = {
     id: string
     eventId: string

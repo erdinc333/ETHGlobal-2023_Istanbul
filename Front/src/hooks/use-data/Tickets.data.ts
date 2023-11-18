@@ -16,4 +16,8 @@ export class TicketsData {
   static async getTicketById(id: string): Promise<TTicket | null> {
     return TICKETS.find((ticket) => ticket.id === id) || null
   }
+
+  static async getEventTicketCategories(eventId: string): Promise<TTicketCategory[]> {
+    return [{ label: TICKETS[0].description, supply: 1 }]
+  }
 }
