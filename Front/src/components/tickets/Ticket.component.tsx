@@ -2,16 +2,17 @@ import './Ticket.scss'
 
 type TProps = {
   ticket: TTicket,
+  consumeTicket?: (ticket: TTicket, amount?: number) => void
   owned?: boolean
   amount?: number
 }
 
-export function Ticket({ ticket, owned, amount }: TProps) {
+export function Ticket({ ticket, consumeTicket, owned, amount }: TProps) {
 
   function handleBuy() {}
-  function handleUse() {}
-
-  console.log({ amount })
+  function handleUse() {
+    if (consumeTicket) consumeTicket(ticket, amount)
+  }
 
   return (
     <>
