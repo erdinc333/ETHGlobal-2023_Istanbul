@@ -1,26 +1,39 @@
-import { useState } from 'react'
 import './Ticket.scss'
 
 type TProps = {
-  ticket: TTicket
+  ticket: TTicket,
+  owned?: boolean
+  amount?: number
 }
 
-export function Ticket({ ticket }: TProps) {
-  const [extended, setExtended] = useState<boolean>(false)
+export function Ticket({ ticket, owned, amount }: TProps) {
 
-  function handleClick() {
-    setExtended((current) => !current)
-  }
+  function handleBuy() {}
+  function handleUse() {}
+
+  console.log({ amount })
 
   return (
     <>
-      <div className={ extended ? 'extended ticket' : 'ticket' } onClick={handleClick}>
+      <div className={ 'ticket' }>
         <div className="left-deco deco"></div>
 
+      
+        {
+          amount && <small className="amount">x{ amount }</small>
+        }
+
         <div className="content-wrapper">
-          <p className="description">{ ticket.description }</p>
+          <div className="data">
+            <p className="description">{ ticket.description }</p>
+          </div>
           <div className="price-wrapper">
-            <button className="price btn action">{ ticket.price }$</button>
+            {
+              
+              owned
+                ? <button className="price btn action" onClick={handleUse}>Use</button>
+                : <button className="price btn action" onClick={handleBuy}>{ ticket.price }$</button>
+            }
           </div>
         </div>
 

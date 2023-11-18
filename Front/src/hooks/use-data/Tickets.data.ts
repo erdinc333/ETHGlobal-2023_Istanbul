@@ -13,6 +13,10 @@ export class TicketsData {
     return TICKETS.filter((ticket) => ticket.eventId === eventId)
   }
 
+  static async getMyTickets(): Promise<TTicket[]> {
+    return TICKETS
+  }
+
   static async getTicketById(id: string): Promise<TTicket | null> {
     return TICKETS.find((ticket) => ticket.id === id) || null
   }

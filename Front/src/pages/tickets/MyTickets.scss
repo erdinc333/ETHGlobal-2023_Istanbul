@@ -31,29 +31,7 @@
     }
   }
 
-  .info {
-    width: calc(100% - 50px);
-    padding: 25px;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    * {
-      color: var(--secondary);
-    }
-
-    .meta {
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-    }
-
-    .description {
-      text-transform: initial;
-    }
-  }
-
-  .market-place {
+  .tickets-list {
     width: calc(100% - 50px);
     padding: 25px;
     padding-bottom: 100px;
@@ -68,13 +46,27 @@
       margin-bottom: 50px;
     }
 
-    .tickets {
-      width: clamp(200px, 100%, 1220px);
-      justify-items: center;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    .events {
+      width: 100%;
+      .event {
+        width: 100%;
 
-      gap: 20px;
+        & + .event {
+          margin-top: 20px;
+          border-top: solid 1px white;
+
+        }
+        .tickets {
+          width: clamp(200px, 100%, 1220px);
+          justify-items: center;
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    
+          gap: 20px;
+        }
+      }
     }
+
+    
   }
 }

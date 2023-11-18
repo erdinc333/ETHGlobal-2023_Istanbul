@@ -11,12 +11,23 @@
   h1, h2, h3, h4, h5 {
     font-family: Helvetica, sans-serif;
     text-transform: uppercase;
+    color: white;
   }
 
   a {
     color: white;
 
     &:hover {
+      color: white;
+    }
+  }
+
+  input, textarea {
+    background-color: var(--secondary);
+    color: white !important;
+    border-radius: 5px;
+
+    &::placeholder{
       color: white;
     }
   }

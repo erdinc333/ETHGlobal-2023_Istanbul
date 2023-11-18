@@ -71,7 +71,11 @@ export function ManageEvents() {
 
         </Modal>
 
-        <h2>Manage my events</h2>
+        <section className="catch">
+          <div className="titles">
+            <h1>Manage My Events</h1>
+          </div>
+        </section>
 
         <div className="events">
           { events.map((event) => <EventCard event={event} key={event.id} />) }
