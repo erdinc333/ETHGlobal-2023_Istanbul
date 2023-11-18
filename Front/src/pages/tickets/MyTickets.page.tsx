@@ -3,12 +3,21 @@ import './MyTickets.scss'
 import { useEffect, useState } from "react"
 import { handleData } from '../../hooks/use-data/handleData.hook'
 import { Ticket } from '../../components/tickets/Ticket.component'
+import { Modal } from '../../components/global/modal/Modal.component'
+import QRious from 'qrious';
 
 type TEventTitle = string
 type TTicketCategory = string
 
 export function MyTickets() {
   const [myTicketsPerEvent, setMyTicketsPerEvent] = useState<Record<TEventTitle, Record<TTicketCategory,  TTicket[]>>>({})
+  const [open, setOpen] = useState<boolean>(false)
+
+  function consumeTicket(ticket: TTicket, amount?: number) {
+    setOpen(true)
+    const qr = new QRious({element: document.getElementById("qrcode"), value: "https://webisora.com"});
+    qr.size = 300
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -40,6 +49,14 @@ export function MyTickets() {
   return (
     <>
       <section id="my-tickets" className="page">
+        
+      <Modal open={open} setOpen={setOpen}>
+        <div className="qrcode-wrapper">
+
+          <canvas id="qrcode"></canvas>
+        </div>
+      </Modal>
+
         {
           event
             ? <>
@@ -55,12 +72,12 @@ export function MyTickets() {
                     {
                       Object.entries(myTicketsPerEvent).map(([eventTitle, categories]) => {
                         return (
-                          <div className="event">
+                          <div className="event" key={eventTitle}>
                             <h3>{eventTitle}</h3>
 
                             <div className="tickets">
                               {
-                                Object.values(categories).map((tickets) => <Ticket  owned={true} ticket={tickets[0]} key={tickets[0].id} amount={tickets.length} />)
+                                Object.values(categories).map((tickets) => <Ticket  owned={true} ticket={tickets[0]} key={tickets[0].id} amount={tickets.length} consumeTicket={consumeTicket} />)
                               }
                             </div>
                           </div>
@@ -70,12 +87,12 @@ export function MyTickets() {
                     {
                       Object.entries(myTicketsPerEvent).map(([eventTitle, categories]) => {
                         return (
-                          <div className="event">
+                          <div className="event" key={eventTitle}>
                             <h3>{eventTitle}</h3>
 
                             <div className="tickets">
                               {
-                                Object.values(categories).map((tickets) => <Ticket  owned={true} ticket={tickets[0]} key={tickets[0].id} amount={tickets.length} />)
+                                Object.values(categories).map((tickets) => <Ticket  owned={true} ticket={tickets[0]} key={tickets[0].id} amount={tickets.length} consumeTicket={consumeTicket} />)
                               }
                             </div>
                           </div>

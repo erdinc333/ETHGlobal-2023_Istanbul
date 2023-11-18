@@ -1,5 +1,13 @@
 #my-tickets {
   width: 100%;
+
+  .qrcode-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px 0;
+  }
   .catch {
     height: calc(70svh - var(--navbar-height));
     width: calc(100%);
