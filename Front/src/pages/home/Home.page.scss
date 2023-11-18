@@ -1,1 +1,92 @@
-#home {}
+#home {
+
+  .catch {
+    height: calc(90svh - var(--navbar-height));
+    width: calc(100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg?cs=srgb&dl=pexels-teddy-yang-2263436.jpg&fm=jpg");
+    // background-image: url("https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8Mnx8fGVufDB8fHx8fA%3D%3D");
+    background-size: cover;
+    background-position: center;
+
+    .titles {
+      backdrop-filter: blur(7px);
+      padding: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      width: 100%;
+      // width: 0%;
+      // animation-name: grow;
+      // animation-duration: 1s;
+      // animation-delay: 0.5s;
+      // animation-fill-mode: forwards;
+
+      .title-wrapper {
+        width: fit-content;
+  
+        .logo {
+          position: relative;
+          top: -100vh;
+          animation-name: go-in-top;
+          animation-duration: 1s;
+          animation-delay: 0.5s;
+          // animation-delay: 1.5s;
+          animation-fill-mode: forwards;
+        }
+  
+        h3 {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          margin: 0;
+          color: white;
+          font-size: 12px;
+          span {
+            text-shadow: -1px 3px 6px rgba(0,0,0,0.6);
+          }
+
+          position: relative;
+          bottom: -100vh;
+          animation-name: go-in-bottom;
+          animation-duration: 1.5s;
+          animation-delay: 0.5s;
+          animation-fill-mode: forwards;
+        }
+      } 
+    }
+  }
+
+  .presentation {
+    height: 200px;
+    width: 100%;
+    background-color: var(--secondary);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    h2 {
+      margin: 0;
+    }
+
+    button {
+      margin-top: 25px;
+    }
+  }
+}
+
+// @keyframes grow {
+
+//   0% {
+//     width: 0%;
+//   }
+
+//   100% {
+//     width: 100%;
+//   }
+  
+// }

@@ -1,0 +1,41 @@
+.event-resume {
+  background-color: var(--primary);
+  border-radius: 10px;
+  overflow: hidden;
+  .block {
+    display: flex;
+    width: 800px;
+    height: 300px;
+
+    .picture {
+      width: 70%;
+      height: 100%;
+
+      background-size: cover;
+
+      .no-picture {
+        background-color: var(--secondary);
+      }
+    }
+
+    .content {
+      width: 100%;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .btn-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: right;
+      }
+    }
+  }
+}

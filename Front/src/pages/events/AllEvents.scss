@@ -1,3 +1,44 @@
 #all-events {
   
+  .catch {
+    height: calc(70svh - var(--navbar-height));
+    width: calc(100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("https://images5.alphacoders.com/349/349660.jpg");
+    background-size: cover;
+    background-position: center;
+
+    .titles {
+      backdrop-filter: blur(7px);
+      padding: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      width: 100%;
+  
+      h1 {
+        position: relative;
+        top: -100vh;
+        animation-name: go-in-top;
+        animation-duration: 1s;
+        animation-delay: 0.5s;
+        // animation-delay: 1.5s;
+        animation-fill-mode: forwards;
+        text-shadow: -1px 1px 6px rgba(0,0,0,0.6);
+      }
+    }
+  }
+
+  .all-events {
+    padding: 50px 0;
+    width: 100%;
+    background-color: var(--secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
 }
