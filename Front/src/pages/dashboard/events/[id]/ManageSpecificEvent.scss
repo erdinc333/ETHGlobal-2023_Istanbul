@@ -1,1 +1,97 @@
-#manage-specific-event {}
+#manage-specific-event {
+  width: 100%;
+  input, textarea {
+    border-radius: 5px;
+    box-shadow: none;
+    border: none;
+    padding: 10px;
+  }
+  .catch {
+    height: calc(70svh - var(--navbar-height));
+    width: calc(100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg?cs=srgb&dl=pexels-teddy-yang-2263436.jpg&fm=jpg");
+    background-size: cover;
+    background-position: center;
+
+    .titles {
+      backdrop-filter: blur(7px);
+      padding: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      width: 100%;
+  
+      .input {
+        height: 50px;
+        font-size: 30px;
+      }
+    }
+  }
+
+  .info {
+    width: calc(100% - 50px);
+    padding: 25px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    input {
+      width: 300px;
+    }
+
+    .meta {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      .time {
+        input {
+          width: fit-content;
+
+          &:first-child {
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+
+    .input {
+      color: white;
+      width: calc(100% - 20px);
+      height: 100px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      margin-top: 50px;
+    }
+  }
+
+  .market-place {
+    width: calc(100% - 50px);
+    padding: 25px;
+    background-color: var(--primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    h2 {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .tickets {
+      width: clamp(200px, 100%, 1220px);
+      justify-items: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+      gap: 20px;
+    }
+  }
+}

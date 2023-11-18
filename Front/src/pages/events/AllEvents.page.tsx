@@ -28,7 +28,7 @@ export function AllEvents() {
         </section>
 
         <section className="all-events">
-          { events.map((event) => <EventResume event={event} />) }
+          { events.map((event) => <EventResume event={event} key={event.id}/>) }
         </section>
       </section>
     </>

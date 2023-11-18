@@ -4,15 +4,9 @@ export {}
 
 declare global {
   type TPrice = number
-  type TOption = {
-    value: string,
-    price: TPrice
-    maxSupply: number
-    currentSupply: number
-  }
   
   type TDateTimeRange = {
-    begin: date
+    begin: Date
     end: Date
   }
 
@@ -27,36 +21,12 @@ declare global {
     picturesURL: string[]
   }
 
-  type TTicketParameter = {
-    label: string
-    options: TOption[]
-    toSelectedOption: (selectedOptionValue: string) => TTicketSelectedOption | null
-  }
-
-  type TTicketSelectedOption = {
-    parameterLabel: string
-    option: TOption
-  }
-
-  type TTicketTemplate = {
-    id: string
-    eventId: string
-    issuerAddress: string
-    templateName: string
-    parameters: TTicketParameter[]
-    transferFees: number
-    maxSupply: number
-    currentSupply: number
-    createTicket: (selectedOptions: TTicketSelectedOption[]) => Omit<TTicket, 'id'> | null
-  }
-
   type TTicket = {
     id: string
     eventId: string
-    templateId: string
-    issuerAddress: string
-    selectedOptions: TTicketSelectedOption[]
-    getPrice: () => TPrice
+    transferFees: number
+    description: string
+    price: TPrice
   }
 
 

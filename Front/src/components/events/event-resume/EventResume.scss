@@ -1,5 +1,5 @@
 .event-resume {
-  background-color: var(--primary);
+  background-color: white; // var(--primary);
   border-radius: 10px;
   overflow: hidden;
   .block {
@@ -10,9 +10,14 @@
     .picture {
       width: 70%;
       height: 100%;
+      transition: width 0.2s;
 
       background-size: cover;
 
+
+      &:hover {
+        width: 90%;
+      }
       .no-picture {
         background-color: var(--secondary);
       }
@@ -24,6 +29,10 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+
+      * {
+        color: var(--secondary);
+      }
 
       .header {
         display: flex;
