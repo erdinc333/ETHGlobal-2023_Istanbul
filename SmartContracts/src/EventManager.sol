@@ -5,78 +5,115 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
 struct Event
 {
-    uint256 id;
     string jsonCID;
     uint256 date;
+    uint256 resellFees;
     address payable owner;
     uint256 ticketTypeCount;
-    uint256 ticketStorageId;
 }
 
 struct Ticket
 {
-    uint256 price;
     uint256 quantity;
-    uint256 sold;
-    uint256 resellFees;
-    address payable owner;
 }
 
-
-interface IEventManager is ERC1155
+struct TicketSelling
 {
-    function createEvent(string jsonCID, uint256 date, Ticket[] tickets) external returns (uint256);
-    function createTicket(uint256 eventId, uint256 price, uint256 quantity) external returns (uint256);
-
-    function editEvent(uint256 eventId, string jsonCID, uint256 date) external;
-
-
-    function buyTicket(uint256 ticketId) external payable;
-    function transferTickets(uint256 ticketId, uint256 quantity, address to) external;
-    function useTickets(uint256 ticketId, uint256 quantity) external;
-    function allowSellingForTicket(uint256[] ticketIds, uint256[] howMany) external;
-    function getTicket(uint256 ticketId) external view returns (uint256, uint256, uint256, uint256, uint256, address);
-    function getEvent(uint256 eventId) external view returns (uint256, string memory, string memory, uint256, address);
-
+    uint256 remainingQuantity;
+    uint256 price;
 }
 
-contract EventManager is IEventManager {
-    event TicketBought(uint256 ticketId, uint256 quantity, address buyer);
-
-
+contract EventManager is ERC1155 {
+    event TicketBought(uint256 ticketId, uint256 quantity, address buyer, address seller);
+    event EventCreated(uint256 eventId, string jsonCID, uint256 date, uint256[] ticketIds);
+    event TicketUsed(uint256 ticketId, uint256 quantity, address user);
+    event TicketInSell(uint256 ticketId, uint256 quantity, uint256 price, address seller);
 
     uint256 public eventCount;
     mapping(uint256 => Event) public events;
 
-    uint256 public ticketStorageCount;
-    mapping(uint256 => uint256) public ticketsIdsOfTicketStorage;
-    mapping(uint256 => mapping(uint256 => Ticket)) public ticketsStorage;
+    uint256 public ticketsCount;
+    mapping(uint256 => Ticket) public tickets;
+    mapping(uint256 => mapping(uint256 => uint256)) public ticketsOfEvents;     // mapping(eventId => mapping(ticketTypeInEventCount => ticketId))
     mapping(string => uint256) public cidToEventId;
+    mapping(address => mapping(uint256 => TicketSelling)) public ticketsInSell; // mapping(seller => mapping(ticketId => TicketSelling))
 
-    uint256 ticketCount;
 
     constructor() ERC1155("https://{cid}.ipfs.w3s.link/")
     {
     
     }
 
-    function createEvent(string jsonCID, uint256 date, Ticket[] tickets) external returns (uint256)
+    function createEvent(string memory jsonCID, uint256 date, uint256 resellFees, Ticket[] memory ticketsToSet) external returns (uint256)
     {
         uint256 eventId = eventCount;
-        events[eventId] = Event(eventId, jsonCID, date, payable(msg.sender), ticketStorageCount);
+        Event storage currentEvent = events[eventId];
+        currentEvent.jsonCID = jsonCID;
+        currentEvent.date = date;
+        currentEvent.resellFees = resellFees;
+        currentEvent.owner = payable(msg.sender);
+        currentEvent.ticketTypeCount = 0;
+
         eventCount++;
 
-        uint256 ticketStorageId = ticketStorageCount;
-        for(uint256 i = 0; i < tickets.length; i++)
+        for(uint256 i = 0; i < ticketsToSet.length; i++)
         {
-            _mint(msg.sender, ticketCount, tickets[i].quantity, "");
-            ticketsStorage[ticketStorageId][i] = tickets[i];
+            uint256 ticketId = ticketsCount;
+
+            currentTicket.quantity = ticketsToSet[i].quantity;
+
+            ticketsOfEvents[eventId][currentEvent.ticketTypeCount] = ticketId;
+
+            _mint(msg.sender, ticketId, ticketsToSet[i].quantity, "");
+
+            currentEvent.ticketTypeCount++;
+            ticketsCount++;
         }
-        ticketsCountPerStorage[ticketStorageId] = tickets.length;
-        ticketStorageCount++;
 
         return eventId;
     }
+
+    function useTickets(uint256[] memory ticketsIds, uint256[] memory quantity) external
+    {
+        for (uint256 i = 0; i < ticketsIds.length; i++)
+        {
+            uint256 ticketId = ticketsIds[i];
+            uint256 ticketQuantity = quantity[i];
+
+            require(balanceOf(msg.sender, ticketId) > ticketQuantity, "You don't have enough tickets");
+
+
+            _burn(msg.sender, ticketId, ticketQuantity);
+            emit TicketUsed(ticketId, ticketQuantity, msg.sender);
+        }
+    }
+
+    function buyTicket(uint256[] memory ticketsIds, uint256[] memory quantity, address from) external payable
+    {
+        for (uint256 i = 0; i < ticketsIds.length; i++)
+        {
+            uint256 ticketId = ticketsIds[i];
+            TicketSelling storage currentTicketInSell = ticketsInSell[from][ticketId];
+
+            require(currentTicketInSell.remainingQuantity > quantity[i], "Seller doesn't have enough tickets");
+            require(msg.value > currentTicketInSell.remainingQuantity * currentTicketInSell.price, "Seller doesn't have enough tickets");
+        }
+    }
+
+    function sellTicketInMarketplace(uint256[] memory ticketIds, uint256[] memory howMany, uint256[] memory sellPrices) external
+    {
+        for (uint256 i = 0; i < ticketIds.length; i++)
+        {
+            require(balanceOf(msg.sender, ticketIds[i]) >= howMany[i], "You don't have enough tickets");
+
+            ticketsInSell[msg.sender][ticketIds[i]] = TicketSelling(howMany[i], sellPrices[i]);
+
+            emit TicketInSell(ticketIds[i], howMany[i], sellPrices[i], msg.sender);
+        }
+        setApprovalForAll(address(this), true);
+        safeBatchTransferFrom(msg.sender, address(this), ticketIds, howMany, "");
+    }
+
 
 
 
