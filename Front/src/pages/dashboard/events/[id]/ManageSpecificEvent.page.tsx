@@ -6,6 +6,10 @@ import { handleData } from '../../../../hooks/use-data/handleData.hook'
 import { Modal } from '../../../../components/global/modal/Modal.component'
 import { IpfsClientContext } from '../../../../Contexts/ipfsClientContext'
 import { uploadFile } from '../../../../lib/IPFS/ipfs_client'
+import { useAccount, useContractWrite } from 'wagmi'
+import { eventContractABI } from '../../../../ABIs/EventContractABI'
+import { writeContract, waitForTransaction } from '@wagmi/core'
+
 
 export function ManageSpecificEvent() {
   const { id: eventId } = useParams() 
@@ -16,6 +20,13 @@ export function ManageSpecificEvent() {
   const [openCreateTickets, setOpenCreateTickets] = useState<boolean>(false)
   const [newTickets, setNewTicket] = useState<TTicketCategory>({ label: '', supply: 1, transferFees: 0 })
   const ipfsClient = useContext(IpfsClientContext)
+  const { address, isConnecting, isDisconnected } = useAccount()
+
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    address: import.meta.env.VITE_EVENT_CONTRACT_ADDRESS,
+    abi: eventContractABI,
+    functionName: 'createEvent',
+  })
 
   function dateToDatetimeString(date: Date | null | undefined): string {
     if (!date) return ''
@@ -46,16 +57,45 @@ export function ManageSpecificEvent() {
     setOpenCreateTickets(false)
   }
 
-  function buildPayload()
+  function buildPayload(event: TEvent): TCreateEventPayload
   {
-      
+    return {
+      title: event.title,
+      description: event.description,
+      location: event.location,
+      dateTimeRange: event.dateTimeRange,
+      picturesURL: event.picturesURL,
+      tickets: ticketCategories,
+      authorAddress: event.authorAddress,
+      status: event.status,
+    }
   }
 
-  async function updateEvent() {
+  function convertTicketCategoriesToPayload(ticketCategories: TTicketCategory[]): TTicketCreationPayload[]
+  {
+    return ticketCategories.map((ticketCategory) => ({
+      quantity: ticketCategory.supply,
+      description: ticketCategory.label,
+    }))
+  }
+
+  
+
+  async function createEvent() {
+    console.log("updateEvent button clicked")
+
     if (!event) return
-    handleData().events.updateEvent(event)
     if (!ipfsClient) return
-    uploadFile(ipfsClient, {})
+    console.log("updateEvent launched ...")
+    const cid = await uploadFile(ipfsClient, buildPayload(event));
+    console.log("contract address", import.meta.env.VITE_SMART_CONTRACT_ADDRESS)
+    writeContract({
+      address: import.meta.env.VITE_SMART_CONTRACT_ADDRESS,
+      abi: eventContractABI,
+      functionName: 'createEvent',
+      args: [cid, 0, 0, convertTicketCategoriesToPayload(ticketCategories)],
+    })
+
   }
 
   useEffect(() => {
@@ -102,7 +142,7 @@ export function ManageSpecificEvent() {
                     </div>
                   </div>
                   <textarea className="input" value={event.description} onChange={(event) => setEvent((curr) => (curr ? { ...curr, description: event.target.value } : null))} />
-                  <button className="btn action" onClick={updateEvent}>Update Event</button>
+                  <button className="btn action" onClick={createEvent}>Update Event</button>
                 </section>
 
                 <section className="market-place">

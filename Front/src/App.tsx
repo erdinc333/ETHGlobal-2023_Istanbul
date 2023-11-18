@@ -14,7 +14,7 @@ import { Navbar } from './components/global/navbar/Navbar.component'
 import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react'
 
 import { WagmiConfig } from 'wagmi'
-import { arbitrum, mainnet } from 'viem/chains'
+import { arbitrum, mainnet, sepolia } from 'viem/chains'
 import { buildClient, uploadTest } from './lib/IPFS/ipfs_client'
 import { Client } from '@web3-storage/w3up-client'
 import { useState, useEffect } from 'react'
@@ -32,8 +32,8 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 }
 
-const chains = [mainnet, arbitrum]
-const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata })
+const chains = [sepolia]
+const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata, })
 
 // 3. Create modal
 createWeb3Modal({ wagmiConfig, projectId, chains })

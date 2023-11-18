@@ -12,7 +12,6 @@ export async function buildClient () {
   const principal = Signer.parse(import.meta.env.VITE_IPFS_KEY)
   const client = await Client.create({ principal })
   // Add proof that this agent has been delegated capabilities on the space
-  console.log("🚀 ~ file: ipfs_client.ts:8 ~ proof_key:", proof_key)
 
   const proof = await parseProof(proof_key)
   const space = await client.addSpace(proof)
@@ -48,6 +47,8 @@ export async function uploadFile (client: Client.Client, obj: object): Promise<s
   const file = makeFileObjects(obj, 'data.json')
 
   const cid = (await client.uploadFile(file)).toString()
+  console.log('Uploaded file to', cid)
+
   return cid
 }
 
@@ -55,8 +56,5 @@ export async function uploadTest()
 {
   const client = await buildClient()
   const cid = await uploadFile(client, { test_oui: 'jeTestOui' })
-
-
-  console.log('Uploaded file to', cid)
   return cid
 }

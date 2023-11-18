@@ -1,4 +1,6 @@
+import { Client } from "@web3-storage/w3up-client"
 import { EEventStatuses } from "../../assets/enums/events.enum"
+import { uploadFile } from "../../lib/IPFS/ipfs_client"
 
 const EVENTS: TEvent[] = [
   {
@@ -6,7 +8,7 @@ const EVENTS: TEvent[] = [
     authorAddress: '1',
     title: 'My First Event',
     description: 'A super cool event',
-    location: '29 rue des Garennes, 91340 Ollainville',
+    location: 'A random address',
     dateTimeRange: {
       begin: new Date('2025-01-15'),
       end: new Date('2025-01-30'),
@@ -16,9 +18,6 @@ const EVENTS: TEvent[] = [
   }
 ]
 
-type TCreateEventPayload = Omit<TEvent, 'id'>
-type TUpdateEventPayload = { id: string } & Partial<Omit<TEvent, 'authorAddress'>>
-
 export class EventsData {
   static async getAllEvents(): Promise<TEvent[]> {
     return EVENTS
@@ -26,13 +25,6 @@ export class EventsData {
 
   static async getEventById(id: string): Promise<TEvent | null> {
     return EVENTS.find((event) => event.id === id) || null
-  }
-
-  static async createEvent(payload: TCreateEventPayload): Promise<TEvent> {
-    const newEvent = { ...payload, id: String(EVENTS.length + 1) }
-    EVENTS.push(newEvent)
-
-    return newEvent
   }
 
   static async updateEvent(payload: TUpdateEventPayload): Promise<TEvent> {

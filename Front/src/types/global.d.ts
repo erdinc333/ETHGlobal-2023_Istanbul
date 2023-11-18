@@ -21,6 +21,9 @@ declare global {
     picturesURL: string[]
   }
 
+  type TCreateEventPayload = { tickets: TTicketCategory[] } & Omit<TEvent, 'id'>
+  type TUpdateEventPayload = { id: string } & Partial<Omit<TEvent, 'authorAddress'>>
+
   type TEventCreationPayload = {
     authorAddress: string
     title: string
@@ -36,6 +39,11 @@ declare global {
     label: string,
     supply: number,
     transferFees: number
+  }
+
+  type TTicketCreationPayload = {
+    quantity: number,
+    description: string,
   }
 
   type TTicket = {
