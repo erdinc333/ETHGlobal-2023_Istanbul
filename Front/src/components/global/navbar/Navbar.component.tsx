@@ -6,14 +6,18 @@ export function Navbar() {
   return (
     <>
       <div id="navbar">
-        <Logo color="secondary" />
+        <div className="fixed">
+          <Logo color="secondary" />
 
-        <ul className="links">
-          <NavLink to="/"           className={({ isActive }) => isActive ? 'link active' : 'link'} >Home</NavLink>
-          <NavLink to="/events"     className={({ isActive }) => isActive ? 'link active' : 'link'} >Events</NavLink>
-          <NavLink to="/my-tickets" className={({ isActive }) => isActive ? 'link active' : 'link'} >My Tickets</NavLink>
-          <NavLink to="/dashboard"  className={({ isActive }) => isActive ? 'link active' : 'link'} >Dashboard</NavLink>
-        </ul>
+          <ul className="links">
+            <NavLink to="/"           className={({ isActive }) => isActive ? 'link active' : 'link'} >Home</NavLink>
+            <NavLink to="/events"     className={({ isActive }) => isActive ? 'link active' : 'link'} >Events</NavLink>
+            <NavLink to="/my-tickets" className={({ isActive }) => isActive ? 'link active' : 'link'} >My Tickets</NavLink>
+            <NavLink to="/dashboard"  className={({ isActive }) => isActive ? 'link active' : 'link'} >Dashboard</NavLink>
+          </ul>
+        </div>
+        <div className="blocked"></div>
+        
       </div>
     </>
   )

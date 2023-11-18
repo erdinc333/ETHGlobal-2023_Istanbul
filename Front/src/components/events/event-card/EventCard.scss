@@ -1,10 +1,9 @@
 .event-card {
   background-color: white;
-  border-radius: 10px;
-  padding: 10px;
+  border-radius: 5px;
+  padding: 0 10px;
   display: flex;
-  flex-direction: column;
-  
+  gap: 20px;
   .title {
     color: var(--secondary);
   }

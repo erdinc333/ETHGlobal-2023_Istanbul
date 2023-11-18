@@ -3,6 +3,7 @@ import './ManageSpecificEvent.scss'
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { handleData } from '../../../../hooks/use-data/handleData.hook'
+import { Modal } from '../../../../components/global/modal/Modal.component'
 
 export function ManageSpecificEvent() {
   const { id: eventId } = useParams() 
@@ -10,6 +11,8 @@ export function ManageSpecificEvent() {
   const [ticketCategories, setTicketCategories] = useState<TTicketCategory[]>([])
   const [tmpBegin, setTmpBegin] = useState<string>('')
   const [tmpEnd, setTmpEnd] = useState<string>('')
+  const [openCreateTickets, setOpenCreateTickets] = useState<boolean>(false)
+  const [newTickets, setNewTicket] = useState<TTicketCategory>({ label: '', supply: 0 })
 
   function dateToDatetimeString(date: Date | null | undefined): string {
     if (!date) return ''
@@ -20,14 +23,14 @@ export function ManageSpecificEvent() {
     setEvent((curr) => {
       const newDate = new Date(Date.parse(event.target.value))
       setTmpBegin(dateToDatetimeString(newDate))
-      return (curr ? { ...curr, dateTimeRang: { begin: newDate, end: curr.dateTimeRange.end } } : null)
+      return (curr ? { ...curr, dateTimeRange: { begin: newDate, end: curr.dateTimeRange.end } } : null)
     })
   }
   function handleEndUpdate(event: React.ChangeEvent<HTMLInputElement>) {
     setEvent((curr) => {
       const newDate = new Date(Date.parse(event.target.value))
       setTmpEnd(dateToDatetimeString(newDate))
-      return (curr ? { ...curr, dateTimeRang: { end: newDate, begin: curr.dateTimeRange.begin } } : null)
+      return (curr ? { ...curr, dateTimeRange: { end: newDate, begin: curr.dateTimeRange.begin } } : null)
     })
   }
 
@@ -55,6 +58,13 @@ export function ManageSpecificEvent() {
   return (
     <>
       <section id="manage-specific-event" className="page">
+        <Modal open={openCreateTickets} setOpen={setOpenCreateTickets}>
+          <div className="ticket-form">
+            <input type="text" placeholder="Description" value={newTickets.label} onChange={ (e) => setNewTicket((curr) => ({ ...curr, label: e.target.value })) } />
+            <input type="number" placeholder="Supply" min="1" value={newTickets.supply || ""} onChange={ (e) => setNewTicket((curr) => ({ ...curr, supply: Number(e.target.value) })) } />
+            <button className="btn action">Mint tickets</button>
+          </div>
+        </Modal>
         {
           event
             ? <>
@@ -90,7 +100,7 @@ export function ManageSpecificEvent() {
                     }
                   </div>
 
-                  <button className="btn action">Create Tickets</button>
+                  <button className="btn action" onClick={() => setOpenCreateTickets(true)}>Create Tickets</button>
                 </section>
               </>
             : <p className="not-found">Event not found</p>
