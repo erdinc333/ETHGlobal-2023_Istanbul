@@ -24,7 +24,7 @@
   button {
     &.btn {
       display: flex;
-      border-radius: 100px;
+      border-radius: 5px;
       font-weight: bold;
       border: none !important;
       transition: 0.2s;
@@ -37,7 +37,7 @@
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0px 2px 1px 1px rgba(0,0,0,0.20);
+        // box-shadow: 0px 2px 1px 1px rgba(0,0,0,0.20);
       }
 
       &.primary {
@@ -48,9 +48,9 @@
       }
       &.action {
         background-color: var(--action);
-        color: var(--primary) !important;
+        color: white !important;
         a {
-          color: var(--secondary) !important;
+          color: white !important;
         }
       }
     }

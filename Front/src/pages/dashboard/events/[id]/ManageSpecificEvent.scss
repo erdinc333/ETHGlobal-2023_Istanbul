@@ -6,6 +6,26 @@
     border: none;
     padding: 10px;
   }
+
+  .ticket-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    input {
+      color: white;
+      width: 100%;
+
+      & + input {
+        margin-top: 10px;
+      }
+    }
+
+    .btn {
+      margin-top: 20px;
+    }
+  }
+
   .catch {
     height: calc(70svh - var(--navbar-height));
     width: calc(100%);
