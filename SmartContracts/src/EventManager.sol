@@ -5,9 +5,12 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 import "@openzeppelin/contracts/token/ERC1155//utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 
 contract EventManager is ERC1155, IERC1155Receiver {
+    using ECDSA for bytes32;
+    
     struct Event
     {
         string jsonCID;
@@ -32,7 +35,7 @@ contract EventManager is ERC1155, IERC1155Receiver {
 
     event TicketBought(uint256 ticketId, uint256 quantity, address buyer, address seller);
     event EventCreated(uint256 eventId, string jsonCID, uint256 date, uint256[] ticketIds);
-    event TicketCreated(uint256 ticketId, uint256 quantity, string label, string description);
+    event TicketCreated(uint256 ticketId, uint256 quantity);
     event TicketUsed(uint256 ticketId, uint256 quantity, address user);
     event TicketInSell(uint256 ticketId, uint256 quantity, uint256 price, address seller);
 
@@ -49,6 +52,27 @@ contract EventManager is ERC1155, IERC1155Receiver {
     constructor() ERC1155("https://{cid}.ipfs.w3s.link/")
     {
     
+    }
+        // Function to verify if a hashed message matches the provided message hash
+    function verifyMsgHash(
+        bytes32 messageHash,        // The expected message hash
+        bytes memory userSignature  // The signature of the message
+    ) public view returns (bool) {
+
+        // Recover the signer's address from the signature and message hash
+        address recoveredSigner = messageHash.recover(userSignature);
+
+        // Compare the recovered address with the expected signer's address (e.g., msg.sender)
+        return recoveredSigner == msg.sender;
+    }
+
+    function recoverAddressFromSignature(        
+        bytes32 messageHash,        // The expected message hash
+        bytes memory userSignature  // The signature of the message
+        ) public pure returns (address) {
+            // Recover the signer's address from the signature and message hash
+            address recoveredSigner = messageHash.recover(userSignature);
+            return recoveredSigner;
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155, IERC165) returns (bool) {
@@ -77,7 +101,7 @@ contract EventManager is ERC1155, IERC1155Receiver {
             ticketsOfEvents[eventId][currentEvent.ticketTypeCount] = ticketId;
 
             _mint(msg.sender, ticketId, ticketsToSet[i].quantity, "");
-            emit TicketCreated(ticketId, ticketsToSet[i].quantity, ticketsToSet[i].label, ticketsToSet[i].description);
+            emit TicketCreated(ticketId, ticketsToSet[i].quantity);
 
             currentEvent.ticketTypeCount++;
             ticketsCount++;
@@ -88,7 +112,7 @@ contract EventManager is ERC1155, IERC1155Receiver {
         return eventId;
     }
 
-    function useTickets(uint256[] memory ticketsIds, uint256[] memory quantity) external
+    function useMultipleTicketsIds(uint256[] memory ticketsIds, uint256[] memory quantity) external
     {
         for (uint256 i = 0; i < ticketsIds.length; i++)
         {
@@ -100,6 +124,16 @@ contract EventManager is ERC1155, IERC1155Receiver {
             _burn(msg.sender, ticketId, ticketQuantity);
             emit TicketUsed(ticketId, ticketQuantity, msg.sender);
         }
+    }
+
+    function useTicket(uint256 ticketId, uint256 quantity, bytes32 messageHash, bytes memory userSignature) external
+    {
+        address recoveredSigner = recoverAddressFromSignature(messageHash, userSignature);
+
+        require(balanceOf(recoveredSigner, ticketId) >= quantity, "You don't have enough tickets");
+
+        _burn(recoveredSigner, ticketId, quantity);
+        emit TicketUsed(ticketId, quantity, recoveredSigner);
     }
 
     function append(string memory a, string memory b, string memory c, string memory d, string memory e) internal pure returns (string memory) {

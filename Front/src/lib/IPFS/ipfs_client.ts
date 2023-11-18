@@ -30,7 +30,7 @@ async function parseProof (data: any) {
   for await (const block of reader.blocks()) {
     blocks.push(block)
   }
-  return importDAG(blocks)
+  return importDAG(blocks as any)
 }
 
 export function makeFileObjects (obj: object, filename: string) {
@@ -44,10 +44,10 @@ export function makeFileObjects (obj: object, filename: string) {
 }
 
 
-export async function uploadFile (client: Client.Client, obj: object) {
+export async function uploadFile (client: Client.Client, obj: object): Promise<string> {
   const file = makeFileObjects(obj, 'data.json')
 
-  const cid = await client.uploadFile(file)
+  const cid = (await client.uploadFile(file)).toString()
   return cid
 }
 
@@ -55,9 +55,7 @@ export async function uploadTest()
 {
   const client = await buildClient()
   const cid = await uploadFile(client, { test_oui: 'jeTestOui' })
-  console.log("🚀 ~ file: ipfs_client.ts:58 ~ cid toString:", cid.toString())
-  console.log("🚀 ~ file: ipfs_client.ts:58 ~ cid link:", cid.link())
-  console.log("🚀 ~ file: ipfs_client.ts:58 ~ cid toV1:", cid.toV1())
+
 
   console.log('Uploaded file to', cid)
   return cid

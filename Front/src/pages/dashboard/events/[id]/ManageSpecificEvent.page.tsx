@@ -1,9 +1,11 @@
 import './ManageSpecificEvent.scss'
 
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { handleData } from '../../../../hooks/use-data/handleData.hook'
 import { Modal } from '../../../../components/global/modal/Modal.component'
+import { IpfsClientContext } from '../../../../Contexts/ipfsClientContext'
+import { uploadFile } from '../../../../lib/IPFS/ipfs_client'
 
 export function ManageSpecificEvent() {
   const { id: eventId } = useParams() 
@@ -12,7 +14,8 @@ export function ManageSpecificEvent() {
   const [tmpBegin, setTmpBegin] = useState<string>('')
   const [tmpEnd, setTmpEnd] = useState<string>('')
   const [openCreateTickets, setOpenCreateTickets] = useState<boolean>(false)
-  const [newTickets, setNewTicket] = useState<TTicketCategory>({ label: '', supply: 0 })
+  const [newTickets, setNewTicket] = useState<TTicketCategory>({ label: '', supply: 1, transferFees: 0 })
+  const ipfsClient = useContext(IpfsClientContext)
 
   function dateToDatetimeString(date: Date | null | undefined): string {
     if (!date) return ''
@@ -34,9 +37,25 @@ export function ManageSpecificEvent() {
     })
   }
 
-  function updateEvent() {
+  function onTicketAdd()
+  {
+    if (!event) return
+    const newTicketCategories = [...ticketCategories, newTickets]
+    setTicketCategories(newTicketCategories)
+    setNewTicket({ label: '', supply: 1, transferFees: 0 })
+    setOpenCreateTickets(false)
+  }
+
+  function buildPayload()
+  {
+      
+  }
+
+  async function updateEvent() {
     if (!event) return
     handleData().events.updateEvent(event)
+    if (!ipfsClient) return
+    uploadFile(ipfsClient, {})
   }
 
   useEffect(() => {
@@ -62,7 +81,7 @@ export function ManageSpecificEvent() {
           <div className="ticket-form">
             <input type="text" placeholder="Description" value={newTickets.label} onChange={ (e) => setNewTicket((curr) => ({ ...curr, label: e.target.value })) } />
             <input type="number" placeholder="Supply" min="1" value={newTickets.supply || ""} onChange={ (e) => setNewTicket((curr) => ({ ...curr, supply: Number(e.target.value) })) } />
-            <button className="btn action">Mint tickets</button>
+            <button className="btn action" onClick={onTicketAdd} >Add Ticket</button>
           </div>
         </Modal>
         {

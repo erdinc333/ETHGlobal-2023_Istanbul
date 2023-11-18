@@ -21,15 +21,26 @@ declare global {
     picturesURL: string[]
   }
 
+  type TEventCreationPayload = {
+    authorAddress: string
+    title: string
+    description: string
+    location: string
+    dateTimeRange: TDateTimeRange
+    status: EEventStatuses
+    picturesURL: string[]
+    tickets: TTicketCategory[]
+  }
+
   type TTicketCategory = {
     label: string,
-    supply: number
+    supply: number,
+    transferFees: number
   }
 
   type TTicket = {
     id: string
     eventId: string
-    transferFees: number
     description: string
     price: TPrice
   }

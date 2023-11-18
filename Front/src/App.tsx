@@ -15,7 +15,10 @@ import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react'
 
 import { WagmiConfig } from 'wagmi'
 import { arbitrum, mainnet } from 'viem/chains'
-import { uploadTest } from './lib/IPFS/ipfs_client'
+import { buildClient, uploadTest } from './lib/IPFS/ipfs_client'
+import { Client } from '@web3-storage/w3up-client'
+import { useState, useEffect } from 'react'
+import { IpfsClientContext } from './Contexts/ipfsClientContext'
 
 // 1. Get projectId
 const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID
@@ -36,24 +39,36 @@ createWeb3Modal({ wagmiConfig, projectId, chains })
 
 
 function App() {
+  const [ipfsClient, setIpfsClient] = useState<Client | null>(null)
+
+
+  useEffect(() => {
+    buildClient().then((client) => {
+      setIpfsClient(client)
+    })
+    
+  }, [])
+
   return (
     <>
     <WagmiConfig config={wagmiConfig}>
-      <BrowserRouter basename="/">
-        <section id="layout">
-          <Navbar />
-          <button onClick={uploadTest}>Test</button>
-          <Routes >
-            <Route path="/"                 element={ <Home /> } />
-            <Route path="/events"           element={ <AllEvents /> } />
-            <Route path="/events/:id"       element={ <CheckSpecificEvent /> } />
-            <Route path="/my-tickets"       element={ <MyTickets /> } />
-            <Route path="/dashboard"        element={ <ManageEvents /> } />
-            <Route path="/dashboard/create" element={ <CreateEvent /> } />
-            <Route path="/dashboard/:id"    element={ <ManageSpecificEvent /> } />
-          </Routes>
-        </section>
-      </BrowserRouter>
+      <IpfsClientContext.Provider value={ipfsClient}>
+        <BrowserRouter basename="/">
+          <section id="layout">
+            <Navbar />
+            <button onClick={uploadTest}>Test</button>
+            <Routes >
+              <Route path="/"                 element={ <Home /> } />
+              <Route path="/events"           element={ <AllEvents /> } />
+              <Route path="/events/:id"       element={ <CheckSpecificEvent /> } />
+              <Route path="/my-tickets"       element={ <MyTickets /> } />
+              <Route path="/dashboard"        element={ <ManageEvents /> } />
+              <Route path="/dashboard/create" element={ <CreateEvent /> } />
+              <Route path="/dashboard/:id"    element={ <ManageSpecificEvent /> } />
+            </Routes>
+          </section>
+        </BrowserRouter>
+      </IpfsClientContext.Provider>
     </WagmiConfig>
 
     </>

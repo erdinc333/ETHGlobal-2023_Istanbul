@@ -20,7 +20,7 @@ contract EventManagerTest is Test {
 
     function testCreateEvent() public {
         EventManager.Ticket[] memory ticketsToSet = new EventManager.Ticket[](1);
-        ticketsToSet[0] = EventManager.Ticket(100, "General", "General Admission");
+        ticketsToSet[0] = EventManager.Ticket(100, "General");
 
         vm.prank(user); // only the next line will be called by "user" address
         uint256 eventId = eventManager.createEvent("QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco", block.timestamp, 10, ticketsToSet);
@@ -30,7 +30,7 @@ contract EventManagerTest is Test {
 
     function testEventProperties() public {
         EventManager.Ticket[] memory ticketsToSet = new EventManager.Ticket[](1);
-        ticketsToSet[0] = EventManager.Ticket(100, "General", "General Admission");
+        ticketsToSet[0] = EventManager.Ticket(100, "General");
 
         vm.prank(user); // only the next line will be called by "user" address
         uint256 eventId = eventManager.createEvent("QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco", block.timestamp, 10, ticketsToSet);
@@ -46,7 +46,7 @@ contract EventManagerTest is Test {
 
     function testSellTicketInMarketplace() public {
         EventManager.Ticket[] memory ticketsToSet = new EventManager.Ticket[](1);
-        ticketsToSet[0] = EventManager.Ticket(100, "General", "General Admission");
+        ticketsToSet[0] = EventManager.Ticket(100, "General");
 
         vm.prank(user); // only the next line will be called by "user" address
         uint256 eventId = eventManager.createEvent("QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco", block.timestamp, 10, ticketsToSet);
@@ -88,7 +88,7 @@ contract EventManagerTest is Test {
 
     function testBuyTicket() public {
         EventManager.Ticket[] memory ticketsToSet = new EventManager.Ticket[](1);
-        ticketsToSet[0] = EventManager.Ticket(100, "General", "General Admission");
+        ticketsToSet[0] = EventManager.Ticket(100, "General");
 
         vm.prank(user); // only the next line will be called by "user" address
         uint256 eventId = eventManager.createEvent("QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco", block.timestamp, 10, ticketsToSet);
