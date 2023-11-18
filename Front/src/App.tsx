@@ -11,25 +11,51 @@ import { CreateEvent } from './pages/dashboard/events/create/CreateEvent.page'
 import { MyTickets } from './pages/tickets/MyTickets.page'
 import { Navbar } from './components/global/navbar/Navbar.component'
 
+import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react'
+
+import { WagmiConfig } from 'wagmi'
+import { arbitrum, mainnet } from 'viem/chains'
+import { uploadTest } from './lib/IPFS/ipfs_client'
+
+// 1. Get projectId
+const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID
+
+// 2. Create wagmiConfig
+const metadata = {
+  name: 'Web3Modal',
+  description: 'Web3Modal Example',
+  url: 'https://web3modal.com',
+  icons: ['https://avatars.githubusercontent.com/u/37784886']
+}
+
+const chains = [mainnet, arbitrum]
+const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata })
+
+// 3. Create modal
+createWeb3Modal({ wagmiConfig, projectId, chains })
+
 
 function App() {
   return (
     <>
-    <BrowserRouter basename="/">
-      <section id="layout">
-        <Navbar />
+    <WagmiConfig config={wagmiConfig}>
+      <BrowserRouter basename="/">
+        <section id="layout">
+          <Navbar />
+          <button onClick={uploadTest}>Test</button>
+          <Routes >
+            <Route path="/"                 element={ <Home /> } />
+            <Route path="/events"           element={ <AllEvents /> } />
+            <Route path="/events/:id"       element={ <CheckSpecificEvent /> } />
+            <Route path="/my-tickets"       element={ <MyTickets /> } />
+            <Route path="/dashboard"        element={ <ManageEvents /> } />
+            <Route path="/dashboard/create" element={ <CreateEvent /> } />
+            <Route path="/dashboard/:id"    element={ <ManageSpecificEvent /> } />
+          </Routes>
+        </section>
+      </BrowserRouter>
+    </WagmiConfig>
 
-        <Routes >
-          <Route path="/"                 element={ <Home /> } />
-          <Route path="/events"           element={ <AllEvents /> } />
-          <Route path="/events/:id"       element={ <CheckSpecificEvent /> } />
-          <Route path="/my-tickets"       element={ <MyTickets /> } />
-          <Route path="/dashboard"        element={ <ManageEvents /> } />
-          <Route path="/dashboard/create" element={ <CreateEvent /> } />
-          <Route path="/dashboard/:id"    element={ <ManageSpecificEvent /> } />
-        </Routes>
-      </section>
-    </BrowserRouter>
     </>
   )
 }

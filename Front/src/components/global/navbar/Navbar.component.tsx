@@ -13,6 +13,8 @@ export function Navbar() {
           <NavLink to="/events"     className={({ isActive }) => isActive ? 'link active' : 'link'} >Events</NavLink>
           <NavLink to="/my-tickets" className={({ isActive }) => isActive ? 'link active' : 'link'} >My Tickets</NavLink>
           <NavLink to="/dashboard"  className={({ isActive }) => isActive ? 'link active' : 'link'} >Dashboard</NavLink>
+          <w3m-button />
+          {/* <w3m-connect-button /> */}
         </ul>
       </div>
     </>

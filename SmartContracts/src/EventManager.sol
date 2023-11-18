@@ -20,7 +20,6 @@ contract EventManager is ERC1155, IERC1155Receiver {
     struct Ticket
     {
         uint256 quantity;
-        string label;
         string description;
     }
 
@@ -68,9 +67,12 @@ contract EventManager is ERC1155, IERC1155Receiver {
 
         eventCount++;
 
+        uint256[] memory ticketIds = new uint256[](ticketsToSet.length);
+
         for(uint256 i = 0; i < ticketsToSet.length; i++)
         {
             uint256 ticketId = ticketsCount;
+            ticketIds[i] = ticketId;
 
             ticketsOfEvents[eventId][currentEvent.ticketTypeCount] = ticketId;
 
@@ -80,6 +82,8 @@ contract EventManager is ERC1155, IERC1155Receiver {
             currentEvent.ticketTypeCount++;
             ticketsCount++;
         }
+
+        emit EventCreated(eventId, jsonCID, date, ticketIds);
 
         return eventId;
     }
@@ -92,7 +96,6 @@ contract EventManager is ERC1155, IERC1155Receiver {
             uint256 ticketQuantity = quantity[i];
 
             require(balanceOf(msg.sender, ticketId) > ticketQuantity, "You don't have enough tickets");
-
 
             _burn(msg.sender, ticketId, ticketQuantity);
             emit TicketUsed(ticketId, ticketQuantity, msg.sender);
@@ -114,7 +117,10 @@ contract EventManager is ERC1155, IERC1155Receiver {
 
             require(currentTicketInSell.remainingQuantity >= quantity[i], "Seller doesn't have enough tickets");
             require(msg.value >= currentTicketInSell.remainingQuantity * currentTicketInSell.price,  append("Buyer doesn't have enough money, buyer money = ", Strings.toString(msg.value),  "ticket price = ", Strings.toString(currentTicketInSell.remainingQuantity * currentTicketInSell.price), ""));
+            
+            emit TicketBought(ticketId, quantity[i], msg.sender, from);
         }
+        _safeBatchTransferFrom(address(this), msg.sender, ticketsIds, quantity, "");
     }
 
     function sellTicketInMarketplace(uint256[] memory ticketIds, uint256[] memory howMany, uint256[] memory sellPrices) external
