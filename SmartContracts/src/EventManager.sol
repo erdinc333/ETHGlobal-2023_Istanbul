@@ -2,30 +2,38 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
+import "@openzeppelin/contracts/token/ERC1155//utils/ERC1155Holder.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
-struct Event
-{
-    string jsonCID;
-    uint256 date;
-    uint256 resellFees;
-    address payable owner;
-    uint256 ticketTypeCount;
-}
 
-struct Ticket
-{
-    uint256 quantity;
-}
+contract EventManager is ERC1155, IERC1155Receiver {
+    struct Event
+    {
+        string jsonCID;
+        uint256 date;
+        uint256 resellFees;
+        address payable owner;
+        uint256 ticketTypeCount;
+    }
 
-struct TicketSelling
-{
-    uint256 remainingQuantity;
-    uint256 price;
-}
+    struct Ticket
+    {
+        uint256 quantity;
+        string label;
+        string description;
+    }
 
-contract EventManager is ERC1155 {
+    struct TicketSelling
+    {
+        uint256 remainingQuantity;
+        uint256 price;
+    }
+
+
     event TicketBought(uint256 ticketId, uint256 quantity, address buyer, address seller);
     event EventCreated(uint256 eventId, string jsonCID, uint256 date, uint256[] ticketIds);
+    event TicketCreated(uint256 ticketId, uint256 quantity, string label, string description);
     event TicketUsed(uint256 ticketId, uint256 quantity, address user);
     event TicketInSell(uint256 ticketId, uint256 quantity, uint256 price, address seller);
 
@@ -44,6 +52,10 @@ contract EventManager is ERC1155 {
     
     }
 
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155, IERC165) returns (bool) {
+        return interfaceId == type(IERC1155Receiver).interfaceId || super.supportsInterface(interfaceId);
+    }
+
     function createEvent(string memory jsonCID, uint256 date, uint256 resellFees, Ticket[] memory ticketsToSet) external returns (uint256)
     {
         uint256 eventId = eventCount;
@@ -60,11 +72,10 @@ contract EventManager is ERC1155 {
         {
             uint256 ticketId = ticketsCount;
 
-            currentTicket.quantity = ticketsToSet[i].quantity;
-
             ticketsOfEvents[eventId][currentEvent.ticketTypeCount] = ticketId;
 
             _mint(msg.sender, ticketId, ticketsToSet[i].quantity, "");
+            emit TicketCreated(ticketId, ticketsToSet[i].quantity, ticketsToSet[i].label, ticketsToSet[i].description);
 
             currentEvent.ticketTypeCount++;
             ticketsCount++;
@@ -88,6 +99,12 @@ contract EventManager is ERC1155 {
         }
     }
 
+    function append(string memory a, string memory b, string memory c, string memory d, string memory e) internal pure returns (string memory) {
+
+        return string(abi.encodePacked(a, b, c, d, e));
+
+    }
+
     function buyTicket(uint256[] memory ticketsIds, uint256[] memory quantity, address from) external payable
     {
         for (uint256 i = 0; i < ticketsIds.length; i++)
@@ -95,8 +112,8 @@ contract EventManager is ERC1155 {
             uint256 ticketId = ticketsIds[i];
             TicketSelling storage currentTicketInSell = ticketsInSell[from][ticketId];
 
-            require(currentTicketInSell.remainingQuantity > quantity[i], "Seller doesn't have enough tickets");
-            require(msg.value > currentTicketInSell.remainingQuantity * currentTicketInSell.price, "Seller doesn't have enough tickets");
+            require(currentTicketInSell.remainingQuantity >= quantity[i], "Seller doesn't have enough tickets");
+            require(msg.value >= currentTicketInSell.remainingQuantity * currentTicketInSell.price,  append("Buyer doesn't have enough money, buyer money = ", Strings.toString(msg.value),  "ticket price = ", Strings.toString(currentTicketInSell.remainingQuantity * currentTicketInSell.price), ""));
         }
     }
 
@@ -114,8 +131,28 @@ contract EventManager is ERC1155 {
         safeBatchTransferFrom(msg.sender, address(this), ticketIds, howMany, "");
     }
 
+    function getEvent(uint256 eventId) external view returns (Event memory)
+    {
+        return events[eventId];
+    }
 
+    function getTicketInSell(address user, uint256 tickedId) external view returns (TicketSelling memory)
+    {
+        return ticketsInSell[user][tickedId];
+    }
 
+    function onERC1155Received(address, address, uint256, uint256, bytes memory) public virtual returns (bytes4) {
+        return this.onERC1155Received.selector;
+    }
+
+    function onERC1155BatchReceived(address, address, uint256[] memory, uint256[] memory, bytes memory) public virtual returns (bytes4) {
+        return this.onERC1155BatchReceived.selector;
+    }
+
+    function onERC721Received(address, address, uint256, bytes memory) public virtual returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
 
 
 }
+
