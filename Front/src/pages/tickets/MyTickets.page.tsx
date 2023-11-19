@@ -158,21 +158,7 @@ export function MyTickets() {
                         )
                       })
                     }
-                    {
-                      Object.entries(myTicketsPerEvent).map(([eventTitle, tickets]) => {
-                        return (
-                          <div className="event" key={eventTitle}>
-                            <h3>{eventTitle}</h3>
 
-                            <div className="tickets">
-                              {
-                                tickets.map((ticket) => <Ticket  owned={true} ticket={ticket} key={ticket.id} amount={tickets.length} consumeTicket={consumeTicket} />)
-                              }
-                            </div>
-                          </div>
-                        )
-                      })
-                    }
                   </div>
                 </section>
               </>
