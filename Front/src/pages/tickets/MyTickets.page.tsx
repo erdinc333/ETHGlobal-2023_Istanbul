@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import './MyTickets.scss'
 
 import { useEffect, useState } from "react"
@@ -6,6 +7,10 @@ import { Ticket } from '../../components/tickets/Ticket.component'
 import { Modal } from '../../components/global/modal/Modal.component'
 import QRious from 'qrious';
 import { signMessage } from '@wagmi/core'
+import { writeContract, waitForTransaction } from '@wagmi/core'
+import { contractAdresses } from '../../config/globalConfig'
+import { eventContractABI } from '../../ABIs/EventContractABI'
+import { parseEther } from 'viem'
 
 
 type TEventTitle = string
@@ -15,22 +20,23 @@ export function MyTickets() {
   const [myTicketsPerEvent, setMyTicketsPerEvent] = useState<Record<TEventTitle, Record<TTicketCategory,  TTicket[]>>>({})
   const [open, setOpen] = useState<boolean>(false)
   const [modalType, setModalType] = useState<TTicketModalType>('use')
-  const [howManyTicketToPick, setHowManyTicketToPick] = useState<number>(0)
-  const [ticketPrice, setTicketPrice] = useState<number>(0)
+  const [howManyTicketToPick, setHowManyTicketToPick] = useState<string>('')
+  const [ticketPrice, setTicketPrice] = useState<string>('')
   const [signature, setSignature] = useState<string>('')
+  const [selectedTicket, setSelectedTicket] = useState<TTicket>()
 
   function consumeTicket(type: TTicketModalType , ticket: TTicket, amount?: number) {
     setModalType(type)
     setOpen(true)
-
+    setSelectedTicket(ticket)
   }
 
   function onTicketPriceChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setTicketPrice(Number(event.target.value))
+    setTicketPrice((event.target.value))
   }
 
   function onHowManyTicketToPickChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setHowManyTicketToPick(Number(event.target.value))
+    setHowManyTicketToPick((event.target.value))
   }
 
   async function onSubmit() {
@@ -42,8 +48,16 @@ export function MyTickets() {
       setSignature(signatureFromMetaMask)
       console.log("🚀 ~ file: MyTickets.page.tsx:43 ~ onSubmit ~ signature:", signatureFromMetaMask)
     }
-  }
+    if (modalType === 'sell') {
+      writeContract({
+        address: contractAdresses.sepolia as any,
+        abi: eventContractABI,
+        functionName: 'sellTicketInMarketplace',
+        args: [[selectedTicket?.id], [howManyTicketToPick], [parseEther(ticketPrice)]],
+      })
 
+    }
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -77,32 +91,33 @@ export function MyTickets() {
   if (modalType === 'use') {
     if (signature === '') {
       modalContent = <>
-                <input value={howManyTicketToPick} type="text" placeholder='How many' onChange={onHowManyTicketToPickChange} />
-                <input value={ticketPrice} type="text" placeholder='Which price' onChange={onTicketPriceChange} />
+                <input value={howManyTicketToPick} type="number" placeholder='How many' onChange={onHowManyTicketToPickChange} />
                 <button onClick={onSubmit}>Confirm</button>
             </>
     }
     else
     {
+      
+      const generatedUrl = `${window.location.origin}/dashboard/ticket?client-signature=${signature}&ticket-category-id=${0}&event-id=${0}&amount=${howManyTicketToPick}`
+      const qr = new QRious({element: document.getElementById("qrcode"), value: 
+      generatedUrl});
+      qr.size = 300
       modalContent = <>
         <h5>Scan this code to validate your ticket !</h5>
+        <a href={generatedUrl}>Url</a>
       </>
-      const qr = new QRious({element: document.getElementById("qrcode"), value: 
-      `${window.location.origin}/`});
-      qr.size = 300
     }
   }
   if (modalType === 'sell') {
     modalContent = <>
-            <input type="text" placeholder='How many' />
-            <input type="text" placeholder='Which price' />
+            <input value={howManyTicketToPick} type="number" placeholder='How many' onChange={onHowManyTicketToPickChange} />
+            <input value={ticketPrice} type="number" placeholder='Which price' onChange={onTicketPriceChange} />
             <button onClick={onSubmit}>Confirm</button>
     </>
   }
   if (modalType === 'buy') {
     modalContent = <>
-        <input type="text" placeholder='How many' />
-        <input type="text" placeholder='Which price' />
+        <input value={howManyTicketToPick} type="number" placeholder='How many' onChange={onHowManyTicketToPickChange} />
         <button onClick={onSubmit}>Confirm</button>
       </>
   }

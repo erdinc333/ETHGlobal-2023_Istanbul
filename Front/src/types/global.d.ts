@@ -61,6 +61,7 @@ declare global {
     id: string
     eventId: string
     description: string
+    supply: number,
     price: TPrice
   }
 

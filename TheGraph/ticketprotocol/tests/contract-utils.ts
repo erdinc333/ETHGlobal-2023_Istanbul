@@ -9,7 +9,8 @@ import {
   TicketUsed,
   TransferBatch,
   TransferSingle,
-  URI
+  URI,
+  UserTicketsUpdated
 } from "../generated/Contract/Contract"
 
 export function createApprovalForAllEvent(
@@ -258,4 +259,32 @@ export function createURIEvent(value: string, id: BigInt): URI {
   )
 
   return uriEvent
+}
+
+export function createUserTicketsUpdatedEvent(
+  ticketId: BigInt,
+  quantity: BigInt,
+  user: Address
+): UserTicketsUpdated {
+  let userTicketsUpdatedEvent = changetype<UserTicketsUpdated>(newMockEvent())
+
+  userTicketsUpdatedEvent.parameters = new Array()
+
+  userTicketsUpdatedEvent.parameters.push(
+    new ethereum.EventParam(
+      "ticketId",
+      ethereum.Value.fromUnsignedBigInt(ticketId)
+    )
+  )
+  userTicketsUpdatedEvent.parameters.push(
+    new ethereum.EventParam(
+      "quantity",
+      ethereum.Value.fromUnsignedBigInt(quantity)
+    )
+  )
+  userTicketsUpdatedEvent.parameters.push(
+    new ethereum.EventParam("user", ethereum.Value.fromAddress(user))
+  )
+
+  return userTicketsUpdatedEvent
 }

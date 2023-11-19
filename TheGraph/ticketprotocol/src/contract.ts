@@ -7,7 +7,8 @@ import {
   TicketUsed as TicketUsedEvent,
   TransferBatch as TransferBatchEvent,
   TransferSingle as TransferSingleEvent,
-  URI as URIEvent
+  URI as URIEvent,
+  UserTicketsUpdated as UserTicketsUpdatedEvent
 } from "../generated/Contract/Contract"
 import {
   ApprovalForAll,
@@ -18,7 +19,8 @@ import {
   TicketUsed,
   TransferBatch,
   TransferSingle,
-  URI
+  URI,
+  UserTicketsUpdated
 } from "../generated/schema"
 
 export function handleApprovalForAll(event: ApprovalForAllEvent): void {
@@ -151,6 +153,21 @@ export function handleURI(event: URIEvent): void {
   let entity = new URI(event.transaction.hash.concatI32(event.logIndex.toI32()))
   entity.value = event.params.value
   entity.Contract_id = event.params.id
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
+export function handleUserTicketsUpdated(event: UserTicketsUpdatedEvent): void {
+  let entity = new UserTicketsUpdated(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity.ticketId = event.params.ticketId
+  entity.quantity = event.params.quantity
+  entity.user = event.params.user
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
