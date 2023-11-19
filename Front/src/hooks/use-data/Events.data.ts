@@ -48,6 +48,7 @@ export class EventsData {
   }
 
   static async getEventById(id: string): Promise<TEvent | null> {
+    if (id === '') return EVENTS[0]
 
     const fetchedEvent = await fetchOneEvent(Number(id))
     const event = await convertFetchedEventToTEvent(fetchedEvent[0])

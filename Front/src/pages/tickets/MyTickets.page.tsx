@@ -10,8 +10,6 @@ import { signMessage } from '@wagmi/core'
 import { writeContract, waitForTransaction } from '@wagmi/core'
 import { contractAdresses } from '../../config/globalConfig'
 import { eventContractABI } from '../../ABIs/EventContractABI'
-import { parseEther } from 'viem'
-import { useAccount } from 'wagmi'
 
 
 type TEventTitle = string
@@ -25,7 +23,6 @@ export function MyTickets() {
   const [ticketPrice, setTicketPrice] = useState<string>('')
   const [signature, setSignature] = useState<string>('')
   const [selectedTicket, setSelectedTicket] = useState<TTicket>()
-  const { address, isConnecting, isDisconnected } = useAccount()
 
   function consumeTicket(type: TTicketModalType , ticket: TTicket, amount?: number) {
     setModalType(type)
@@ -55,7 +52,7 @@ export function MyTickets() {
         address: contractAdresses.sepolia as any,
         abi: eventContractABI,
         functionName: 'sellTicketInMarketplace',
-        args: [[selectedTicket?.id], [howManyTicketToPick], [parseEther(ticketPrice)]],
+        args: [[selectedTicket?.id], [howManyTicketToPick], [howManyTicketToPick]],
       })
 
     }
@@ -63,7 +60,7 @@ export function MyTickets() {
 
   useEffect(() => {
     async function fetchData() {
-      const tickets = await handleData().tickets.getMyTickets(address || '')
+      const tickets = await handleData().tickets.getMyTickets()
       const allUniqueEventIds = Array.from(new Set(tickets.map((ticket) => ticket.eventId)))
 
       const ticketsPerEvent: Record<TEventTitle, Record<TTicketCategory, TTicket[]>> = {}
@@ -112,14 +109,14 @@ export function MyTickets() {
   }
   if (modalType === 'sell') {
     modalContent = <>
-            <input value={howManyTicketToPick} type="number" placeholder='How many' onChange={onHowManyTicketToPickChange} />
-            <input value={ticketPrice} type="number" placeholder='Which price' onChange={onTicketPriceChange} />
+            <input type="number" placeholder='How many' />
+            <input type="number" placeholder='Which price' />
             <button onClick={onSubmit}>Confirm</button>
     </>
   }
   if (modalType === 'buy') {
     modalContent = <>
-        <input value={howManyTicketToPick} type="number" placeholder='How many' onChange={onHowManyTicketToPickChange} />
+        <input type="number" placeholder='How many' />
         <button onClick={onSubmit}>Confirm</button>
       </>
   }

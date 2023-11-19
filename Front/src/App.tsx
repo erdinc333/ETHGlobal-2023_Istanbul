@@ -63,7 +63,7 @@ function App() {
               <Route path="/events/:id"       element={ <CheckSpecificEvent /> } />
               <Route path="/my-tickets"       element={ <MyTickets /> } />
               <Route path="/dashboard"        element={ <ManageEvents /> } />
-              <Route path="/dashboard/create" element={ <CreateEvent /> } />
+              <Route path="/dashboard/create" element={ <ManageSpecificEvent /> } />
               <Route path="/dashboard/:id"    element={ <ManageSpecificEvent /> } />
               <Route path="/dashboard/ticket" element={ <BurnTicket /> } />
             </Routes>

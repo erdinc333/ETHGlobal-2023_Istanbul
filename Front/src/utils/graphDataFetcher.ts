@@ -41,6 +41,7 @@ export const fetchAllEvents = async () : Promise<TEventFromBlockchain[]> => {
         quantity
         ticketId
         user
+        eventIdOfTicket
       }
     }
       `)

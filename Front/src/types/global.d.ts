@@ -61,9 +61,17 @@ declare global {
     id: string
     eventId: string
     description: string
-    supply: number,
+    supply?: number,
     price: TPrice
   }
+
+  type TTicketFromBlockchain = 
+    {
+      quantity: number,
+      ticketId: number,
+      user: string,
+      eventIdOfTicket: number
+    } 
 
 
 }
