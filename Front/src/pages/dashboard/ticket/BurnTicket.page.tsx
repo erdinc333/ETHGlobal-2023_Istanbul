@@ -4,6 +4,10 @@ import './BurnTicket.scss'
 import { useEffect, useState } from "react"
 import { handleData } from "../../../hooks/use-data/handleData.hook"
 import { useSearchParams } from 'react-router-dom'
+import { writeContract } from '@wagmi/core'
+import { contractAdresses } from '../../../config/globalConfig'
+import { eventContractABI } from '../../../ABIs/EventContractABI'
+import { ethers, parseEther } from 'ethers'
 
 
 export function BurnTicket() {
@@ -19,7 +23,28 @@ export function BurnTicket() {
   const eventId = searchParams.get('event-id')
   const amount = searchParams.get('amount')
 
-  function burn() {}
+  function burn() {
+
+    
+    
+    const message = `id: ${ticketCategoryId}, ticket amount to use : ${amount}`
+    const hashedMessage = ethers.hashMessage(message)
+    
+    console.log("hashedMessage = ", hashedMessage)
+    // writeContract({
+    //   address: contractAdresses.sepolia as any,
+    //   abi: eventContractABI,
+    //   functionName: 'useTicket',
+    //   args: [ticketCategoryId, amount, clientSignature, hashedMessage],
+    // })
+
+    writeContract({
+      address: contractAdresses.sepolia as any,
+      abi: eventContractABI,
+      functionName: 'sellTicketInMarketplace',
+      args: [[1], [0], [parseEther("0.000000001")]],
+    })
+  }
 
   useEffect(() => {
     async function fetchData() {

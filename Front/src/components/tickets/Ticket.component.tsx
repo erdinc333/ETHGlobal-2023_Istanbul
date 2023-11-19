@@ -1,4 +1,8 @@
 import './Ticket.scss'
+import { contractAdresses } from '../../config/globalConfig'
+import { eventContractABI } from '../../ABIs/EventContractABI'
+import { parseEther } from 'viem'
+import { writeContract } from '@wagmi/core'
 
 type TProps = {
   ticket: TTicket,
@@ -10,7 +14,14 @@ type TProps = {
 export function Ticket({ ticket, consumeTicket, owned, amount }: TProps) {
 
   function handleBuy() {
-    if (consumeTicket) consumeTicket('buy', ticket, amount)
+    writeContract({
+      address: contractAdresses.sepolia as any,
+      abi: eventContractABI,
+      functionName: 'sellTicketInMarketplace',
+      args: [[1], [0], [parseEther("0")]],
+    })
+
+    // if (consumeTicket) consumeTicket('buy', ticket, amount)
   }
   function handleSell() {
     if (consumeTicket) consumeTicket('sell', ticket, amount)

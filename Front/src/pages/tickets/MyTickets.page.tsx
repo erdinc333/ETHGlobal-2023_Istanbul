@@ -45,7 +45,7 @@ export function MyTickets() {
     if (modalType === 'use') {
     
       const signatureFromMetaMask = await signMessage({
-        message: `id: ${0}, ticket amount to use : ${howManyTicketToPick}`,
+        message: `id: ${selectedTicket?.id}, ticket amount to use : ${howManyTicketToPick}`,
       })
       setSignature(signatureFromMetaMask)
       console.log("🚀 ~ file: MyTickets.page.tsx:43 ~ onSubmit ~ signature:", signatureFromMetaMask)

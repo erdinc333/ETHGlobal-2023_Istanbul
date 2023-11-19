@@ -19,6 +19,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.19.0",
     "viem": "^1.19.3",
+    "ethers": "^6.7.1",
     "wagmi": "^1.4.7"
   },
   "devDependencies": {
