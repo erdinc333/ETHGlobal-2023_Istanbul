@@ -97,6 +97,7 @@ type UserTicketsUpdated @entity(immutable: true) {
   id: Bytes!
   ticketId: BigInt! # uint256
   quantity: BigInt! # uint256
+  eventIdOfTicket: BigInt! # uint256
   user: Bytes! # address
   blockNumber: BigInt!
   blockTimestamp: BigInt!

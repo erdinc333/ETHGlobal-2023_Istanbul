@@ -1,3 +1,5 @@
+import { fetchMyTickets } from "../../utils/graphDataFetcher"
+
 const TICKETS: TTicket[] = [
   {
     id: '1',
@@ -12,7 +14,10 @@ export class TicketsData {
     return TICKETS.filter((ticket) => ticket.eventId === eventId)
   }
 
-  static async getMyTickets(): Promise<TTicket[]> {
+  static async getMyTickets(userAddress: string): Promise<TTicket[]> {
+    const ticketFromBlockchainRow = await fetchMyTickets(userAddress)
+    console.log("🚀 ~ file: Tickets.data.ts:19 ~ TicketsData ~ getMyTickets ~ ticketFromBlockchainRow:", ticketFromBlockchainRow)
+
     return TICKETS
   }
 

@@ -167,6 +167,7 @@ export function handleUserTicketsUpdated(event: UserTicketsUpdatedEvent): void {
   )
   entity.ticketId = event.params.ticketId
   entity.quantity = event.params.quantity
+  entity.eventIdOfTicket = event.params.eventIdOfTicket
   entity.user = event.params.user
 
   entity.blockNumber = event.block.number

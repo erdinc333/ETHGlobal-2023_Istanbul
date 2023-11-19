@@ -6,9 +6,9 @@ dataSources:
     name: Contract
     network: sepolia
     source:
-      address: "0xf31e10e16e94278d5b02842025988390e85aafd9"
+      address: "0x3fA92e6259E1359dE0670bee81Cf8C2fD54A50Ba"
       abi: Contract
-      startBlock: 4721836
+      startBlock: 0x3fA92e6259E1359dE0670bee81Cf8C2fD54A50Ba
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -46,6 +46,6 @@ dataSources:
           handler: handleTransferSingle
         - event: URI(string,indexed uint256)
           handler: handleURI
-        - event: UserTicketsUpdated(uint256,uint256,address)
+        - event: UserTicketsUpdated(uint256,uint256,uint256,address)
           handler: handleUserTicketsUpdated
       file: ./src/contract.ts

@@ -11,6 +11,7 @@ import { writeContract, waitForTransaction } from '@wagmi/core'
 import { contractAdresses } from '../../config/globalConfig'
 import { eventContractABI } from '../../ABIs/EventContractABI'
 import { parseEther } from 'viem'
+import { useAccount } from 'wagmi'
 
 
 type TEventTitle = string
@@ -24,6 +25,7 @@ export function MyTickets() {
   const [ticketPrice, setTicketPrice] = useState<string>('')
   const [signature, setSignature] = useState<string>('')
   const [selectedTicket, setSelectedTicket] = useState<TTicket>()
+  const { address, isConnecting, isDisconnected } = useAccount()
 
   function consumeTicket(type: TTicketModalType , ticket: TTicket, amount?: number) {
     setModalType(type)
@@ -61,7 +63,7 @@ export function MyTickets() {
 
   useEffect(() => {
     async function fetchData() {
-      const tickets = await handleData().tickets.getMyTickets()
+      const tickets = await handleData().tickets.getMyTickets(address || '')
       const allUniqueEventIds = Array.from(new Set(tickets.map((ticket) => ticket.eventId)))
 
       const ticketsPerEvent: Record<TEventTitle, Record<TTicketCategory, TTicket[]>> = {}

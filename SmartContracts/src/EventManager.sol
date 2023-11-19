@@ -34,7 +34,7 @@ contract EventManager is ERC1155, IERC1155Receiver {
 
 
     event TicketBought(uint256 ticketId, uint256 quantity, address buyer, address seller);
-    event UserTicketsUpdated(uint256 ticketId, uint256 quantity, address user);
+    event UserTicketsUpdated(uint256 ticketId, uint256 quantity, uint256 eventIdOfTicket, address user);
     event EventCreated(uint256 eventId, string jsonCID, uint256 date, uint256[] ticketIds);
     event TicketCreated(uint256 ticketId, uint256 quantity);
     event TicketUsed(uint256 ticketId, uint256 quantity, address user);
@@ -48,6 +48,7 @@ contract EventManager is ERC1155, IERC1155Receiver {
     mapping(uint256 => mapping(uint256 => uint256)) public ticketsOfEvents;     // mapping(eventId => mapping(ticketTypeInEventCount => ticketId))
     mapping(string => uint256) public cidToEventId;
     mapping(address => mapping(uint256 => TicketSelling)) public ticketsInSell; // mapping(seller => mapping(ticketId => TicketSelling))
+    mapping(uint256 => uint256) public eventIdOfTicketId; // mapping(ticketId => quantity
 
     constructor() ERC1155("https://{cid}.ipfs.w3s.link/")
     {
@@ -99,10 +100,11 @@ contract EventManager is ERC1155, IERC1155Receiver {
             ticketIds[i] = ticketId;
 
             ticketsOfEvents[eventId][currentEvent.ticketTypeCount] = ticketId;
+            eventIdOfTicketId[ticketId] = eventId;
 
             _mint(msg.sender, ticketId, ticketsToSet[i].quantity, "");
             emit TicketCreated(ticketId, ticketsToSet[i].quantity);
-            emit UserTicketsUpdated(ticketId, ticketsToSet[i].quantity, msg.sender);
+            emit UserTicketsUpdated(ticketId, ticketsToSet[i].quantity, eventId, msg.sender);
 
             currentEvent.ticketTypeCount++;
             ticketsCount++;
@@ -135,7 +137,7 @@ contract EventManager is ERC1155, IERC1155Receiver {
 
         _burn(recoveredSigner, ticketId, quantity);
         emit TicketUsed(ticketId, quantity, recoveredSigner);
-        emit UserTicketsUpdated(ticketId, balanceOf(recoveredSigner, ticketId) - quantity, msg.sender);
+        emit UserTicketsUpdated(ticketId, balanceOf(recoveredSigner, ticketId) - quantity, eventIdOfTicketId[ticketId], msg.sender);
 
     }
 
@@ -156,7 +158,7 @@ contract EventManager is ERC1155, IERC1155Receiver {
             require(msg.value >= currentTicketInSell.remainingQuantity * currentTicketInSell.price,  append("Buyer doesn't have enough money, buyer money = ", Strings.toString(msg.value),  "ticket price = ", Strings.toString(currentTicketInSell.remainingQuantity * currentTicketInSell.price), ""));
             
             emit TicketBought(ticketId, quantity[i], msg.sender, from);
-            emit UserTicketsUpdated(ticketId, balanceOf(msg.sender, ticketId) + quantity[i], msg.sender);
+            emit UserTicketsUpdated(ticketId, balanceOf(msg.sender, ticketId) + quantity[i], eventIdOfTicketId[ticketId], msg.sender);
         }
         _safeBatchTransferFrom(address(this), msg.sender, ticketsIds, quantity, "");
     }
@@ -170,7 +172,7 @@ contract EventManager is ERC1155, IERC1155Receiver {
             ticketsInSell[msg.sender][ticketIds[i]] = TicketSelling(howMany[i], sellPrices[i]);
 
             emit TicketInSell(ticketIds[i], howMany[i], sellPrices[i], msg.sender);
-            emit UserTicketsUpdated(ticketIds[i], balanceOf(msg.sender, ticketIds[i]) - howMany[i], msg.sender);
+            emit UserTicketsUpdated(ticketIds[i], balanceOf(msg.sender, ticketIds[i]) - howMany[i], eventIdOfTicketId[ticketIds[i]], msg.sender);
         }
         setApprovalForAll(address(this), true);
         safeBatchTransferFrom(msg.sender, address(this), ticketIds, howMany, "");

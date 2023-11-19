@@ -264,6 +264,7 @@ export function createURIEvent(value: string, id: BigInt): URI {
 export function createUserTicketsUpdatedEvent(
   ticketId: BigInt,
   quantity: BigInt,
+  eventIdOfTicket: BigInt,
   user: Address
 ): UserTicketsUpdated {
   let userTicketsUpdatedEvent = changetype<UserTicketsUpdated>(newMockEvent())
@@ -280,6 +281,12 @@ export function createUserTicketsUpdatedEvent(
     new ethereum.EventParam(
       "quantity",
       ethereum.Value.fromUnsignedBigInt(quantity)
+    )
+  )
+  userTicketsUpdatedEvent.parameters.push(
+    new ethereum.EventParam(
+      "eventIdOfTicket",
+      ethereum.Value.fromUnsignedBigInt(eventIdOfTicket)
     )
   )
   userTicketsUpdatedEvent.parameters.push(
