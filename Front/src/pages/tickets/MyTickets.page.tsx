@@ -10,19 +10,22 @@ import { signMessage } from '@wagmi/core'
 import { writeContract, waitForTransaction } from '@wagmi/core'
 import { contractAdresses } from '../../config/globalConfig'
 import { eventContractABI } from '../../ABIs/EventContractABI'
+import { parseEther } from 'viem'
+import { useAccount } from 'wagmi'
 
 
 type TEventTitle = string
 type TTicketCategory = string
 
 export function MyTickets() {
-  const [myTicketsPerEvent, setMyTicketsPerEvent] = useState<Record<TEventTitle, Record<TTicketCategory,  TTicket[]>>>({})
+  const [myTicketsPerEvent, setMyTicketsPerEvent] = useState<Record<TEventTitle,  TTicket[]>>({})
   const [open, setOpen] = useState<boolean>(false)
   const [modalType, setModalType] = useState<TTicketModalType>('use')
   const [howManyTicketToPick, setHowManyTicketToPick] = useState<string>('')
   const [ticketPrice, setTicketPrice] = useState<string>('')
   const [signature, setSignature] = useState<string>('')
   const [selectedTicket, setSelectedTicket] = useState<TTicket>()
+  const { address, isConnecting, isDisconnected } = useAccount()
 
   function consumeTicket(type: TTicketModalType , ticket: TTicket, amount?: number) {
     setModalType(type)
@@ -52,7 +55,7 @@ export function MyTickets() {
         address: contractAdresses.sepolia as any,
         abi: eventContractABI,
         functionName: 'sellTicketInMarketplace',
-        args: [[selectedTicket?.id], [howManyTicketToPick], [howManyTicketToPick]],
+        args: [[selectedTicket?.id], [howManyTicketToPick], [parseEther(ticketPrice)]],
       })
 
     }
@@ -60,20 +63,15 @@ export function MyTickets() {
 
   useEffect(() => {
     async function fetchData() {
-      const tickets = await handleData().tickets.getMyTickets()
+      const tickets = await handleData().tickets.getMyTickets(address || '')
       const allUniqueEventIds = Array.from(new Set(tickets.map((ticket) => ticket.eventId)))
 
-      const ticketsPerEvent: Record<TEventTitle, Record<TTicketCategory, TTicket[]>> = {}
+      const ticketsPerEvent: Record<TEventTitle, TTicket[]> = {}
       for (const eventId of allUniqueEventIds) {
+        console.log("🚀 ~ file: MyTickets.page.tsx:71 ~ fetchData ~ eventId:", eventId)
         const event = await handleData().events.getEventById(eventId)
-        const eventCategories = await handleData().tickets.getEventTicketCategories(eventId)
         const eventTickets = tickets.filter((_ticket) => _ticket.eventId === eventId)
-        ticketsPerEvent[event?.title || 'Unknown Event'] = {}
-
-        for (const category of eventCategories) {
-          const ticketsOfCategory = eventTickets.filter((_ticket) => _ticket.description === category.label)
-          ticketsPerEvent[event?.title || 'Unknown Event'][category.label] = ticketsOfCategory
-        }
+        ticketsPerEvent[event?.title || 'Unknown Event'] = eventTickets
       }
 
       console.log({ ticketsPerEvent })
@@ -109,14 +107,14 @@ export function MyTickets() {
   }
   if (modalType === 'sell') {
     modalContent = <>
-            <input type="number" placeholder='How many' />
-            <input type="number" placeholder='Which price' />
+            <input value={howManyTicketToPick} type="number" placeholder='How many' onChange={onHowManyTicketToPickChange} />
+            <input value={ticketPrice} type="number" placeholder='Which price' onChange={onTicketPriceChange} />
             <button onClick={onSubmit}>Confirm</button>
     </>
   }
   if (modalType === 'buy') {
     modalContent = <>
-        <input type="number" placeholder='How many' />
+        <input value={howManyTicketToPick} type="number" placeholder='How many' onChange={onHowManyTicketToPickChange} />
         <button onClick={onSubmit}>Confirm</button>
       </>
   }
@@ -146,14 +144,14 @@ export function MyTickets() {
                   <h2>Tickets per event</h2>
                   <div className="events">
                     {
-                      Object.entries(myTicketsPerEvent).map(([eventTitle, categories]) => {
+                      Object.entries(myTicketsPerEvent).map(([eventTitle, tickets]) => {
                         return (
                           <div className="event" key={eventTitle}>
                             <h3>{eventTitle}</h3>
 
                             <div className="tickets">
                               {
-                                Object.values(categories).map((tickets) => <Ticket  owned={true} ticket={tickets[0]} key={tickets[0].id} amount={tickets.length} consumeTicket={consumeTicket} />)
+                                tickets.map((ticket) => <Ticket owned={true} ticket={ticket} key={ticket?.id} amount={ticket.supply} consumeTicket={consumeTicket} />)
                               }
                             </div>
                           </div>
@@ -161,14 +159,14 @@ export function MyTickets() {
                       })
                     }
                     {
-                      Object.entries(myTicketsPerEvent).map(([eventTitle, categories]) => {
+                      Object.entries(myTicketsPerEvent).map(([eventTitle, tickets]) => {
                         return (
                           <div className="event" key={eventTitle}>
                             <h3>{eventTitle}</h3>
 
                             <div className="tickets">
                               {
-                                Object.values(categories).map((tickets) => <Ticket  owned={true} ticket={tickets[0]} key={tickets[0].id} amount={tickets.length} consumeTicket={consumeTicket} />)
+                                tickets.map((ticket) => <Ticket  owned={true} ticket={ticket} key={ticket.id} amount={tickets.length} consumeTicket={consumeTicket} />)
                               }
                             </div>
                           </div>

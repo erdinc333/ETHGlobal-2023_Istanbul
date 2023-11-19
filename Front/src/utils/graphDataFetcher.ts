@@ -42,6 +42,7 @@ export const fetchAllEvents = async () : Promise<TEventFromBlockchain[]> => {
         ticketId
         user
         eventIdOfTicket
+        blockTimestamp
       }
     }
       `)
