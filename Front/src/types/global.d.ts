@@ -71,6 +71,7 @@ declare global {
       ticketId: number,
       user: string,
       eventIdOfTicket: number
+      blockTimestamp: string
     } 
 
 
