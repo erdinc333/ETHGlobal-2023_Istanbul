@@ -1,12 +1,22 @@
 #my-tickets {
   width: 100%;
 
+  .modal-ticket
+  {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+  }
+
   .qrcode-wrapper {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 50px 0;
+    flex-direction: column;
+    gap: 20px;
   }
   .catch {
     height: calc(70svh - var(--navbar-height));

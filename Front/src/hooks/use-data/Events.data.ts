@@ -1,6 +1,8 @@
 import { Client } from "@web3-storage/w3up-client"
 import { EEventStatuses } from "../../assets/enums/events.enum"
 import { uploadFile } from "../../lib/IPFS/ipfs_client"
+import { fetchAllEvents, fetchOneEvent } from "../../utils/graphDataFetcher"
+import { fetchFileCID } from "../../utils/fetchIPFS"
 
 const EVENTS: TEvent[] = [
   {
@@ -14,17 +16,43 @@ const EVENTS: TEvent[] = [
       end: new Date('2025-01-30'),
     },
     picturesURL: ['https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8Mnx8fGVufDB8fHx8fA%3D%3D'],
-    status: EEventStatuses.ACTIVE
+    status: EEventStatuses.ACTIVE,
+    tickets: []
   }
 ]
 
+const convertFetchedEventToTEvent = async (fetchedEvent: TEventFromBlockchain): Promise<TEvent> => {
+  const event = await fetchFileCID(fetchedEvent.jsonCID)
+  event.id = fetchedEvent.eventId.toString()
+  event.dateTimeRange.begin = new Date(event.dateTimeRange.begin)
+  event.dateTimeRange.end = new Date(event.dateTimeRange.end)
+  return event
+}
+
 export class EventsData {
   static async getAllEvents(): Promise<TEvent[]> {
-    return EVENTS
+    const allEventInBlockchain = await fetchAllEvents()
+    console.log("🚀 ~ file: Events.data.ts:26 ~ EventsData ~ getAllEvents ~ allEventInBlockchain:", allEventInBlockchain)
+
+    const allEvents: TEvent[] = await Promise.all(allEventInBlockchain.map(async (event) => {
+      const fetchedEvent = await fetchFileCID(event.jsonCID)
+
+      fetchedEvent.id = event.eventId.toString()
+      fetchedEvent.dateTimeRange.begin = new Date(fetchedEvent.dateTimeRange.begin)
+      fetchedEvent.dateTimeRange.end = new Date(fetchedEvent.dateTimeRange.end)
+      return fetchedEvent
+    }))
+    console.log("🚀 ~ file: Events.data.ts:32 ~ EventsData ~ allEvents ~ allEvents:", allEvents)
+
+    return allEvents
   }
 
   static async getEventById(id: string): Promise<TEvent | null> {
-    return EVENTS.find((event) => event.id === id) || null
+
+    const fetchedEvent = await fetchOneEvent(Number(id))
+    const event = await convertFetchedEventToTEvent(fetchedEvent[0])
+
+    return event
   }
 
   static async updateEvent(payload: TUpdateEventPayload): Promise<TEvent> {
@@ -48,6 +76,7 @@ export class EventsData {
       dateTimeRange: payload.dateTimeRange || currentEvent.dateTimeRange,
       picturesURL: payload.picturesURL || currentEvent.picturesURL,
       status: currentEvent.status,
+
     }
 
     EVENTS.splice(currentEventIndex, 1, updatedEvent)

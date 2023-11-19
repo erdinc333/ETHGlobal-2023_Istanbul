@@ -19,6 +19,17 @@ declare global {
     dateTimeRange: TDateTimeRange
     status: EEventStatuses
     picturesURL: string[]
+    tickets: TTicketCategory[]
+  }
+
+  type TTicketModalType = 'buy' | 'use' | 'sell'
+
+  type TEventFromBlockchain = {
+      id?: string,
+      eventId: number,
+      jsonCID: string,
+      date: number,
+      ticketIds: number[]
   }
 
   type TCreateEventPayload = { tickets: TTicketCategory[] } & Omit<TEvent, 'id'>
@@ -34,8 +45,8 @@ declare global {
     picturesURL: string[]
     tickets: TTicketCategory[]
   }
-
   type TTicketCategory = {
+
     label: string,
     supply: number,
     transferFees: number

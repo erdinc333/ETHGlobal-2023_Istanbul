@@ -5,6 +5,8 @@ import { handleData } from '../../hooks/use-data/handleData.hook'
 import { Ticket } from '../../components/tickets/Ticket.component'
 import { Modal } from '../../components/global/modal/Modal.component'
 import QRious from 'qrious';
+import { signMessage } from '@wagmi/core'
+
 
 type TEventTitle = string
 type TTicketCategory = string
@@ -12,12 +14,36 @@ type TTicketCategory = string
 export function MyTickets() {
   const [myTicketsPerEvent, setMyTicketsPerEvent] = useState<Record<TEventTitle, Record<TTicketCategory,  TTicket[]>>>({})
   const [open, setOpen] = useState<boolean>(false)
+  const [modalType, setModalType] = useState<TTicketModalType>('use')
+  const [howManyTicketToPick, setHowManyTicketToPick] = useState<number>(0)
+  const [ticketPrice, setTicketPrice] = useState<number>(0)
+  const [signature, setSignature] = useState<string>('')
 
-  function consumeTicket(ticket: TTicket, amount?: number) {
+  function consumeTicket(type: TTicketModalType , ticket: TTicket, amount?: number) {
+    setModalType(type)
     setOpen(true)
-    const qr = new QRious({element: document.getElementById("qrcode"), value: "https://webisora.com"});
-    qr.size = 300
+
   }
+
+  function onTicketPriceChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setTicketPrice(Number(event.target.value))
+  }
+
+  function onHowManyTicketToPickChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setHowManyTicketToPick(Number(event.target.value))
+  }
+
+  async function onSubmit() {
+    if (modalType === 'use') {
+    
+      const signatureFromMetaMask = await signMessage({
+        message: `id: ${0}, ticket amount to use : ${howManyTicketToPick}`,
+      })
+      setSignature(signatureFromMetaMask)
+      console.log("🚀 ~ file: MyTickets.page.tsx:43 ~ onSubmit ~ signature:", signatureFromMetaMask)
+    }
+  }
+
 
   useEffect(() => {
     async function fetchData() {
@@ -46,15 +72,51 @@ export function MyTickets() {
 
   }, [])
 
+  let modalContent = <></>
+
+  if (modalType === 'use') {
+    if (signature === '') {
+      modalContent = <>
+                <input value={howManyTicketToPick} type="text" placeholder='How many' onChange={onHowManyTicketToPickChange} />
+                <input value={ticketPrice} type="text" placeholder='Which price' onChange={onTicketPriceChange} />
+                <button onClick={onSubmit}>Confirm</button>
+            </>
+    }
+    else
+    {
+      modalContent = <>
+        <h5>Scan this code to validate your ticket !</h5>
+      </>
+      const qr = new QRious({element: document.getElementById("qrcode"), value: 
+      `${window.location.origin}/`});
+      qr.size = 300
+    }
+  }
+  if (modalType === 'sell') {
+    modalContent = <>
+            <input type="text" placeholder='How many' />
+            <input type="text" placeholder='Which price' />
+            <button onClick={onSubmit}>Confirm</button>
+    </>
+  }
+  if (modalType === 'buy') {
+    modalContent = <>
+        <input type="text" placeholder='How many' />
+        <input type="text" placeholder='Which price' />
+        <button onClick={onSubmit}>Confirm</button>
+      </>
+  }
+
   return (
     <>
       <section id="my-tickets" className="page">
         
       <Modal open={open} setOpen={setOpen}>
-        <div className="qrcode-wrapper">
+          <div className="qrcode-wrapper">
+            {modalContent }
+            <canvas style={{display: signature ? 'block' : 'none'}}  id="qrcode"></canvas> 
+          </div>
 
-          <canvas id="qrcode"></canvas>
-        </div>
       </Modal>
 
         {

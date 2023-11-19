@@ -10,6 +10,8 @@ export function AllEvents() {
   useEffect(() => {
     async function fetchData() {
       const allEvents = await handleData().events.getAllEvents()
+
+      
       
       setEvents(allEvents)
     }

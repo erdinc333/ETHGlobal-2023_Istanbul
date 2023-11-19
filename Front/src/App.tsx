@@ -57,7 +57,6 @@ function App() {
         <BrowserRouter basename="/">
           <section id="layout">
             <Navbar />
-            <button onClick={uploadTest}>Test</button>
             <Routes >
               <Route path="/"                 element={ <Home /> } />
               <Route path="/events"           element={ <AllEvents /> } />

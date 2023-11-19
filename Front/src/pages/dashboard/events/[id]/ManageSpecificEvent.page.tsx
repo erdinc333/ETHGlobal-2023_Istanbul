@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import './ManageSpecificEvent.scss'
 
 import { useContext, useEffect, useState } from "react"
@@ -9,6 +10,7 @@ import { uploadFile } from '../../../../lib/IPFS/ipfs_client'
 import { useAccount, useContractWrite } from 'wagmi'
 import { eventContractABI } from '../../../../ABIs/EventContractABI'
 import { writeContract, waitForTransaction } from '@wagmi/core'
+import { contractAdresses } from '../../../../config/globalConfig'
 
 
 export function ManageSpecificEvent() {
@@ -21,12 +23,6 @@ export function ManageSpecificEvent() {
   const [newTickets, setNewTicket] = useState<TTicketCategory>({ label: '', supply: 1, transferFees: 0 })
   const ipfsClient = useContext(IpfsClientContext)
   const { address, isConnecting, isDisconnected } = useAccount()
-
-  const { data, isLoading, isSuccess, write } = useContractWrite({
-    address: import.meta.env.VITE_EVENT_CONTRACT_ADDRESS,
-    abi: eventContractABI,
-    functionName: 'createEvent',
-  })
 
   function dateToDatetimeString(date: Date | null | undefined): string {
     if (!date) return ''
@@ -88,9 +84,9 @@ export function ManageSpecificEvent() {
     if (!ipfsClient) return
     console.log("updateEvent launched ...")
     const cid = await uploadFile(ipfsClient, buildPayload(event));
-    console.log("contract address", import.meta.env.VITE_SMART_CONTRACT_ADDRESS)
+    console.log("contract address", contractAdresses.sepolia)
     writeContract({
-      address: import.meta.env.VITE_SMART_CONTRACT_ADDRESS,
+      address: contractAdresses.sepolia as any,
       abi: eventContractABI,
       functionName: 'createEvent',
       args: [cid, 0, 0, convertTicketCategoriesToPayload(ticketCategories)],
