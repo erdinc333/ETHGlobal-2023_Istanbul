@@ -34,7 +34,7 @@ export const fetchAllEvents = async () : Promise<TEventFromBlockchain[]> => {
   }
 
   
-  export const fetchMyTickets = async (myAddress: string) : Promise<TEventFromBlockchain[]> => {
+  export const fetchMyTickets = async (myAddress: string) : Promise<TTicketFromBlockchain[]> => {
     const answers = await fetchWithTheGraph(`
     {
       userTicketsUpdateds(where: {user: "${myAddress}"}) {
