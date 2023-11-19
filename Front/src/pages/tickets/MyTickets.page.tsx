@@ -68,20 +68,17 @@ export function MyTickets() {
 
       const ticketsPerEvent: Record<TEventTitle, TTicket[]> = {}
       for (const eventId of allUniqueEventIds) {
-        console.log("🚀 ~ file: MyTickets.page.tsx:71 ~ fetchData ~ eventId:", eventId)
         const event = await handleData().events.getEventById(eventId)
         const eventTickets = tickets.filter((_ticket) => _ticket.eventId === eventId)
         ticketsPerEvent[event?.title || 'Unknown Event'] = eventTickets
       }
-
-      console.log({ ticketsPerEvent })
 
       setMyTicketsPerEvent(ticketsPerEvent)
     }
 
     fetchData()
 
-  }, [])
+  }, [address])
 
   let modalContent = <></>
 
@@ -89,7 +86,7 @@ export function MyTickets() {
     if (signature === '') {
       modalContent = <>
                 <input value={howManyTicketToPick} type="number" placeholder='How many' onChange={onHowManyTicketToPickChange} />
-                <button onClick={onSubmit}>Confirm</button>
+                <button className="btn action" onClick={onSubmit}>Confirm</button>
             </>
     }
     else
